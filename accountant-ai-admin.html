@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LXI Admin — Accountant AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN SCREEN
+     ============================================================ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-dot"></div>
+      LXI
+    </div>
+    <div class="login-subtitle">Accountant AI · Admin Console</div>
+
+    <h2>Sign in</h2>
+
+    <div class="form-group">
+      <label for="adminEmail">Email</label>
+      <input type="email" id="adminEmail" placeholder="admin@logixinity.com" autocomplete="username" />
+    </div>
+    <div class="form-group">
+      <label for="adminPass">Password</label>
+      <input type="password" id="adminPass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" onclick="handleLogin()">Sign in</button>
+    <div class="login-error" id="loginError">Invalid credentials. Please try again.</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN SHELL
+     ============================================================ -->
+<div class="admin-wrap" id="adminWrap">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-dot"></div>
+      LXI
+    </div>
+    <div class="sidebar-product">Accountant AI Admin</div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Overview</div>
+      <button class="sidebar-link active" onclick="showPanel('dashboard', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+
+      <div class="sidebar-section">Users</div>
+      <button class="sidebar-link" onclick="showPanel('users', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        All Users
+      </button>
+      <button class="sidebar-link" onclick="showPanel('trials', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        In Trial
+      </button>
+      <button class="sidebar-link" onclick="showPanel('cancelled', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+        Cancelled
+      </button>
+
+      <div class="sidebar-section">Billing</div>
+      <button class="sidebar-link" onclick="showPanel('revenue', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Revenue & Plans
+      </button>
+
+      <div class="sidebar-section">Config</div>
+      <button class="sidebar-link" onclick="showPanel('settings', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Settings
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-name" id="sidebarAdminName">Admin</div>
+      <div>LXI Internal</div>
+      <button class="logout-btn" onclick="handleLogout()">← Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1 id="topbarTitle">Dashboard</h1>
+        <div class="topbar-meta" id="topbarMeta">Last synced: just now · Data source: Azure + Stripe</div>
+      </div>
+      <button class="refresh-btn" onclick="refreshData()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Refresh
+      </button>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- ======================================================
+           PANEL: DASHBOARD
+           ====================================================== -->
+      <div class="admin-panel active" id="panel-dashboard">
+
+        <!-- Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Total Users</div>
+            <div class="metric-value" id="m-total">—</div>
+            <div class="metric-sub">Registered customers</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Active</div>
+            <div class="metric-value teal" id="m-active">—</div>
+            <div class="metric-sub">Paying subscribers</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">In Trial</div>
+            <div class="metric-value warn" id="m-trial">—</div>
+            <div class="metric-sub">30-day free trial</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Cancelled</div>
+            <div class="metric-value danger" id="m-cancelled">—</div>
+            <div class="metric-sub">Churned this period</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">MRR</div>
+            <div class="metric-value teal" id="m-mrr">—</div>
+            <div class="metric-sub">Monthly recurring revenue</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Xero Connected</div>
+            <div class="metric-value" id="m-xero">—</div>
+            <div class="metric-sub">Of active users</div>
+          </div>
+        </div>
+
+        <!-- Recent Users -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Recent Registrations</h2>
+              <p>Newest users · Stripe customer data via Azure</p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="table-wrap">
+              <table id="recentTable">
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Company</th>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Xero</th>
+                    <th>Trial Ends</th>
+                    <th>Registered</th>
+                  </tr>
+                </thead>
+                <tbody id="recentTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plan Breakdown -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Plan Breakdown</h2>
+              <p>Active subscribers by plan tier</p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="plan-breakdown-grid">
+              <div class="plan-breakdown-card essential">
+                <div class="plan-name">Essential</div>
+                <div class="plan-count" id="pb-essential">—</div>
+                <div class="plan-revenue" id="pb-essential-rev">— / mo</div>
+              </div>
+              <div class="plan-breakdown-card advanced">
+                <div class="plan-name">Advanced</div>
+                <div class="plan-count" id="pb-advanced">—</div>
+                <div class="plan-revenue" id="pb-advanced-rev">— / mo</div>
+              </div>
+              <div class="plan-breakdown-card pro">
+                <div class="plan-name">Pro</div>
+                <div class="plan-count" id="pb-pro">—</div>
+                <div class="plan-revenue" id="pb-pro-rev">— / mo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panel-dashboard -->
+
+
+      <!-- ======================================================
+           PANEL: ALL USERS
+           ====================================================== -->
+      <div class="admin-panel" id="panel-users">
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>All Users</h2>
+              <p>Complete registered user list · Stripe + Azure</p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="table-controls">
+              <input class="search-input" type="text" placeholder="Search by name, email or company…" oninput="filterTable(this.value, 'usersTableBody')" />
+              <select class="filter-select" onchange="filterByStatus(this.value, 'usersTableBody')">
+                <option value="">All statuses</option>
+                <option value="active">Active</option>
+                <option value="trialing">In Trial</option>
+                <option value="canceled">Cancelled</option>
+                <option value="cancel_pending">Cancelling</option>
+                <option value="past_due">Past Due</option>
+                <option value="paused">Paused</option>
+              </select>
+              <select class="filter-select" onchange="filterByPlan(this.value, 'usersTableBody')">
+                <option value="">All plans</option>
+                <option value="Essential">Essential</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Pro">Pro</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Company</th>
+                    <th>Email</th>
+                    <th>Plan</th>
+                    <th>Status</th>
+                    <th>Xero</th>
+                    <th>Token Usage</th>
+                    <th>Next Billing</th>
+                    <th>Registered</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-users -->
+
+
+      <!-- ======================================================
+           PANEL: IN TRIAL
+           ====================================================== -->
+      <div class="admin-panel" id="panel-trials">
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Users In Trial</h2>
+              <p>30-day free trial · Stripe status: <code>trialing</code></p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Company</th>
+                    <th>Email</th>
+                    <th>Plan</th>
+                    <th>Xero</th>
+                    <th>Trial End Date</th>
+                    <th>Days Left</th>
+                    <th>Registered</th>
+                  </tr>
+                </thead>
+                <tbody id="trialsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-trials -->
+
+
+      <!-- ======================================================
+           PANEL: CANCELLED
+           ====================================================== -->
+      <div class="admin-panel" id="panel-cancelled">
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Cancelled Subscriptions</h2>
+              <p>Stripe status: <code>canceled</code> · or active with <code>cancel_at_period_end: true</code></p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Company</th>
+                    <th>Email</th>
+                    <th>Plan (was)</th>
+                    <th>Status</th>
+                    <th>Cancel Reason</th>
+                    <th>Cancelled At</th>
+                    <th>Registered</th>
+                  </tr>
+                </thead>
+                <tbody id="cancelledTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-cancelled -->
+
+
+      <!-- ======================================================
+           PANEL: REVENUE & PLANS
+           ====================================================== -->
+      <div class="admin-panel" id="panel-revenue">
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Total MRR</div>
+            <div class="metric-value teal" id="rev-mrr">—</div>
+            <div class="metric-sub">Active + cancelling</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">ARR (est.)</div>
+            <div class="metric-value" id="rev-arr">—</div>
+            <div class="metric-sub">MRR × 12</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Avg Revenue / User</div>
+            <div class="metric-value" id="rev-arpu">—</div>
+            <div class="metric-sub">Per active subscriber</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Trial Conversion</div>
+            <div class="metric-value teal" id="rev-conv">—</div>
+            <div class="metric-sub">Trial → Active rate</div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Plan Breakdown</h2>
+              <p>Subscribers and revenue by plan</p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="plan-breakdown-grid">
+              <div class="plan-breakdown-card essential">
+                <div class="plan-name">Essential · $100/mo</div>
+                <div class="plan-count" id="rev-pb-essential">—</div>
+                <div class="plan-revenue" id="rev-pb-essential-rev">— / mo</div>
+              </div>
+              <div class="plan-breakdown-card advanced">
+                <div class="plan-name">Advanced · $150/mo</div>
+                <div class="plan-count" id="rev-pb-advanced">—</div>
+                <div class="plan-revenue" id="rev-pb-advanced-rev">— / mo</div>
+              </div>
+              <div class="plan-breakdown-card pro">
+                <div class="plan-name">Pro · $200/mo</div>
+                <div class="plan-count" id="rev-pb-pro">—</div>
+                <div class="plan-revenue" id="rev-pb-pro-rev">— / mo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stripe field reference -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Stripe API Field Reference</h2>
+              <p>How this panel maps to the Stripe API · <code>GET /v1/subscriptions</code> + <code>GET /v1/customers</code></p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="azure-note">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div>
+                <strong>Subscription fields:</strong> <code>subscription.status</code> (trialing · active · past_due · canceled · paused · unpaid), <code>subscription.trial_end</code>, <code>subscription.current_period_end</code> (next billing), <code>subscription.canceled_at</code>, <code>subscription.cancellation_details.reason</code>, <code>subscription.cancel_at_period_end</code> (cancelling at period end), <code>subscription.items.data[0].price.nickname</code> (plan name), <code>subscription.items.data[0].price.unit_amount</code> (price in cents → MRR).
+                <br /><br />
+                <strong>Customer fields:</strong> <code>customer.id</code>, <code>customer.name</code>, <code>customer.email</code>, <code>customer.created</code> (Unix timestamp), <code>customer.metadata.company</code>.
+                <br /><br />
+                <strong>Azure-stored fields</strong> (not in Stripe): <code>xero_connected</code> (bool), <code>token_usage</code> (int), <code>token_limit</code> (int), <code>last_login</code> (ISO date). Joined to Stripe customer via <code>customer.id</code>.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-revenue -->
+
+
+      <!-- ======================================================
+           PANEL: SETTINGS
+           ====================================================== -->
+      <div class="admin-panel" id="panel-settings">
+
+        <div class="azure-note" style="margin-bottom:20px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <div>
+            LXI Accountant AI admin uses <strong>Azure</strong> as the app data backend (AI processing, token usage, Xero connection state) and <strong>Stripe</strong> as the billing source (subscriptions, plans, trial status). Configure both endpoints below. Values are stored in <code>localStorage</code> for this device — use Azure Key Vault for production secrets.
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <div><h2>Azure Backend</h2><p>Azure Function App — AI data & user records</p></div>
+          </div>
+          <div class="section-card-body">
+            <div class="form-group">
+              <label>Azure Function Endpoint</label>
+              <input type="text" id="cfg-azure-url" placeholder="https://lxi-accountant-fn.azurewebsites.net/api/users" />
+            </div>
+            <div class="form-group">
+              <label>Azure Function Key</label>
+              <input type="password" id="cfg-azure-key" placeholder="Azure function host key" />
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <div><h2>Stripe</h2><p>Subscription & billing data source</p></div>
+          </div>
+          <div class="section-card-body">
+            <div class="form-group">
+              <label>Stripe Secret Key</label>
+              <input type="password" id="cfg-stripe-key" placeholder="sk_live_••••••••••" />
+            </div>
+            <div class="form-group">
+              <label>Stripe Webhook Secret</label>
+              <input type="password" id="cfg-stripe-webhook" placeholder="whsec_••••••••••" />
+            </div>
+            <div class="form-group">
+              <label>Stripe API Base URL</label>
+              <input type="text" value="https://api.stripe.com/v1" readonly style="opacity:0.6;" />
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <div><h2>Admin Access</h2><p>Local credentials — replace with Azure AD SSO in production</p></div>
+          </div>
+          <div class="section-card-body">
+            <div class="form-group">
+              <label>Admin Email</label>
+              <input type="email" id="cfg-admin-email" placeholder="admin@logixinity.com" />
+            </div>
+            <div class="form-group">
+              <label>Admin Password</label>
+              <input type="password" id="cfg-admin-pass" placeholder="Set new password" />
+            </div>
+            <button class="login-btn" style="max-width:180px;margin-top:8px;" onclick="saveSettings()">Save Settings</button>
+          </div>
+        </div>
+
+      </div><!-- /panel-settings -->
+
+    </div><!-- /admin-content -->
+  </main>
+</div><!-- /admin-wrap -->
+
+
+<script>
+/* ============================================================
+   MOCK DATA
+   Field names mirror the Stripe API.
+   Replace fetchUsers() with real Azure Function call that joins
+   Stripe subscription data + Azure app data by customer.id.
+
+   Stripe subscription statuses:
+     trialing · active · past_due · canceled · paused · unpaid
+     cancel_pending = active with cancel_at_period_end: true
+   ============================================================ */
+
+const PLAN_PRICES = { Essential: 100, Advanced: 150, Pro: 200 };
+
+const MOCK_USERS = [
+  {
+    // Stripe: customer object
+    stripe_id: 'cus_001',
+    stripe_name: 'Sarah Mitchell',          // customer.name
+    stripe_email: 'sarah.mitchell@clearledger.com.au', // customer.email
+    stripe_company: 'Clear Ledger Accounting',         // customer.metadata.company
+    stripe_created: '2026-01-14',           // customer.created (Unix → date)
+
+    // Stripe: subscription object
+    stripe_status: 'active',               // subscription.status
+    stripe_plan: 'Advanced',               // subscription.items.data[0].price.nickname
+    stripe_trial_end: null,                // subscription.trial_end
+    stripe_current_period_end: '2026-06-18', // subscription.current_period_end
+    stripe_canceled_at: null,              // subscription.canceled_at
+    stripe_cancel_reason: null,            // subscription.cancellation_details.reason
+    stripe_cancel_at_period_end: false,    // subscription.cancel_at_period_end
+    stripe_mrr: 150,                       // items.data[0].price.unit_amount / 100
+
+    // Azure-stored (joined by stripe_id)
+    xero_connected: true,
+    token_usage: 18400,
+    token_limit: 30000,
+    last_login: '2026-05-17',
+  },
+  {
+    stripe_id: 'cus_002',
+    stripe_name: 'James Nguyen',
+    stripe_email: 'james@nguyenwealth.com',
+    stripe_company: 'Nguyen Wealth Advisory',
+    stripe_created: '2025-12-20',
+    stripe_status: 'active',
+    stripe_plan: 'Pro',
+    stripe_trial_end: null,
+    stripe_current_period_end: '2026-06-03',
+    stripe_canceled_at: null,
+    stripe_cancel_reason: null,
+    stripe_cancel_at_period_end: false,
+    stripe_mrr: 200,
+    xero_connected: true,
+    token_usage: 48200,
+    token_limit: 100000,
+    last_login: '2026-05-18',
+  },
+  {
+    stripe_id: 'cus_003',
+    stripe_name: 'Priya Sharma',
+    stripe_email: 'priya.sharma@brightbooks.net',
+    stripe_company: 'Bright Books Pty Ltd',
+    stripe_created: '2026-05-02',
+    stripe_status: 'trialing',             // Stripe: trialing (not "in_trial")
+    stripe_plan: 'Essential',
+    stripe_trial_end: '2026-06-01',
+    stripe_current_period_end: null,
+    stripe_canceled_at: null,
+    stripe_cancel_reason: null,
+    stripe_cancel_at_period_end: false,
+    stripe_mrr: 0,
+    xero_connected: true,
+    token_usage: 3100,
+    token_limit: 10000,
+    last_login: '2026-05-16',
+  },
+  {
+    stripe_id: 'cus_004',
+    stripe_name: 'Tom Elliot',
+    stripe_email: 'tom.elliot@elliotaccountants.com.au',
+    stripe_company: 'Elliot & Associates',
+    stripe_created: '2026-04-29',
+    stripe_status: 'trialing',
+    stripe_plan: 'Advanced',
+    stripe_trial_end: '2026-05-29',
+    stripe_current_period_end: null,
+    stripe_canceled_at: null,
+    stripe_cancel_reason: null,
+    stripe_cancel_at_period_end: false,
+    stripe_mrr: 0,
+    xero_connected: false,
+    token_usage: 620,
+    token_limit: 30000,
+    last_login: '2026-05-10',
+  },
+  {
+    stripe_id: 'cus_005',
+    stripe_name: 'Linda Park',
+    stripe_email: 'l.park@parkfinancial.com.au',
+    stripe_company: 'Park Financial Group',
+    stripe_created: '2026-02-08',
+    stripe_status: 'active',
+    stripe_plan: 'Essential',
+    stripe_trial_end: null,
+    stripe_current_period_end: '2026-06-10',
+    stripe_canceled_at: null,
+    stripe_cancel_reason: null,
+    stripe_cancel_at_period_end: false,
+    stripe_mrr: 100,
+    xero_connected: true,
+    token_usage: 7800,
+    token_limit: 10000,
+    last_login: '2026-05-14',
+  },
+  {
+    stripe_id: 'cus_006',
+    stripe_name: 'Marcus Chen',
+    stripe_email: 'marcus@alphatax.com.au',
+    stripe_company: 'Alpha Tax Solutions',
+    stripe_created: '2025-11-03',
+    stripe_status: 'canceled',             // Stripe spells it "canceled" (one l)
+    stripe_plan: 'Advanced',
+    stripe_trial_end: null,
+    stripe_current_period_end: null,
+    stripe_canceled_at: '2026-04-15',
+    stripe_cancel_reason: 'payment_failed', // cancellation_details.reason
+    stripe_cancel_at_period_end: false,
+    stripe_mrr: 0,
+    xero_connected: false,
+    token_usage: 0,
+    token_limit: 30000,
+    last_login: '2026-04-10',
+  },
+  {
+    stripe_id: 'cus_007',
+    stripe_name: 'Anika Patel',
+    stripe_email: 'anika@patelbiz.com',
+    stripe_company: 'Patel Business Services',
+    stripe_created: '2026-05-06',
+    stripe_status: 'trialing',
+    stripe_plan: 'Pro',
+    stripe_trial_end: '2026-06-05',
+    stripe_current_period_end: null,
+    stripe_canceled_at: null,
+    stripe_cancel_reason: null,
+    stripe_cancel_at_period_end: false,
+    stripe_mrr: 0,
+    xero_connected: true,
+    token_usage: 9800,
+    token_limit: 100000,
+    last_login: '2026-05-18',
+  },
+  {
+    stripe_id: 'cus_008',
+    stripe_name: 'Dylan Roberts',
+    stripe_email: 'dylan.roberts@finedge.com.au',
+    stripe_company: 'FinEdge Advisory',
+    stripe_created: '2026-01-20',
+    stripe_status: 'cancel_pending',       // active + cancel_at_period_end: true
+    stripe_plan: 'Essential',
+    stripe_trial_end: null,
+    stripe_current_period_end: '2026-05-31',
+    stripe_canceled_at: null,
+    stripe_cancel_reason: 'cancellation_requested',
+    stripe_cancel_at_period_end: true,
+    stripe_mrr: 100,
+    xero_connected: true,
+    token_usage: 4200,
+    token_limit: 10000,
+    last_login: '2026-05-05',
+  },
+];
+
+/* ============================================================
+   AUTH
+   ============================================================ */
+
+const DEFAULT_CREDS = { email: 'admin@logixinity.com', password: 'lxi2026admin' };
+
+function getAdminCreds() {
+  return {
+    email: localStorage.getItem('admin_email') || DEFAULT_CREDS.email,
+    password: localStorage.getItem('admin_pass') || DEFAULT_CREDS.password,
+  };
+}
+
+function handleLogin() {
+  const email = document.getElementById('adminEmail').value.trim();
+  const pass  = document.getElementById('adminPass').value;
+  const creds = getAdminCreds();
+  if (email === creds.email && pass === creds.password) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminWrap').classList.add('visible');
+    document.getElementById('sidebarAdminName').textContent = email.split('@')[0];
+    renderAll();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+document.getElementById('adminPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
+
+function handleLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminWrap').classList.remove('visible');
+  document.getElementById('adminEmail').value = '';
+  document.getElementById('adminPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+
+const PANEL_TITLES = {
+  dashboard: 'Dashboard',
+  users:     'All Users',
+  trials:    'In Trial',
+  cancelled: 'Cancelled',
+  revenue:   'Revenue & Plans',
+  settings:  'Settings',
+};
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent = PANEL_TITLES[id] || id;
+}
+
+/* ============================================================
+   HELPERS
+   ============================================================ */
+
+function statusBadge(status) {
+  // Stripe status values (note: "canceled" with one l)
+  const map = {
+    active:          ['active',    'Active'],
+    trialing:        ['trial',     'In Trial'],       // Stripe: trialing
+    canceled:        ['cancelled', 'Cancelled'],       // Stripe: canceled
+    cancel_pending:  ['cancelled', 'Cancelling'],      // active + cancel_at_period_end
+    past_due:        ['trial',     'Past Due'],
+    paused:          ['trial',     'Paused'],
+    unpaid:          ['cancelled', 'Unpaid'],
+  };
+  const [cls, label] = map[status] || ['', status];
+  return `<span class="badge ${cls}"><span class="badge-dot"></span>${label}</span>`;
+}
+
+function planBadge(plan) {
+  const map = { Essential: 'plan-e', Advanced: 'plan-a', Pro: 'plan-p' };
+  return `<span class="badge ${map[plan] || ''}">${plan}</span>`;
+}
+
+function xeroBadge(connected) {
+  return connected
+    ? `<span class="badge connected">Connected</span>`
+    : `<span class="badge not-connected">Not linked</span>`;
+}
+
+function tokenBar(usage, limit) {
+  const pct = limit ? Math.min(100, Math.round((usage / limit) * 100)) : 0;
+  const cls = pct > 85 ? 'high' : pct > 60 ? 'warn' : '';
+  return `
+    <div class="token-bar-wrap">
+      <div class="token-bar-bg">
+        <div class="token-bar-fill ${cls}" style="width:${pct}%"></div>
+      </div>
+      <span class="token-bar-label">${pct}%</span>
+    </div>`;
+}
+
+function fmt(dateStr) {
+  if (!dateStr) return '—';
+  return new Date(dateStr).toLocaleDateString('en-AU', { day:'2-digit', month:'short', year:'numeric' });
+}
+
+function daysLeft(dateStr) {
+  if (!dateStr) return '—';
+  const diff = Math.ceil((new Date(dateStr) - Date.now()) / 86400000);
+  if (diff < 0) return '<span style="color:var(--danger)">Expired</span>';
+  return `<span style="color:${diff <= 5 ? 'var(--warning)' : 'inherit'}">${diff}d</span>`;
+}
+
+function cancelReasonLabel(reason) {
+  // Stripe cancellation_details.reason values
+  const map = {
+    payment_failed:           'Payment Failed',
+    cancellation_requested:   'Customer Request',
+    payment_disputed:         'Disputed',
+    fraud:                    'Fraud',
+  };
+  return reason ? (map[reason] || reason) : '—';
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+
+function renderAll() {
+  renderMetrics();
+  renderRecentTable();
+  renderPlanBreakdown('pb-essential', 'pb-advanced', 'pb-pro', 'pb-essential-rev', 'pb-advanced-rev', 'pb-pro-rev');
+  renderUsersTable();
+  renderTrialsTable();
+  renderCancelledTable();
+  renderRevenue();
+  loadSettings();
+}
+
+function renderMetrics() {
+  const active    = MOCK_USERS.filter(u => u.stripe_status === 'active' || u.stripe_status === 'cancel_pending').length;
+  const trial     = MOCK_USERS.filter(u => u.stripe_status === 'trialing').length;
+  const cancelled = MOCK_USERS.filter(u => u.stripe_status === 'canceled' || u.stripe_status === 'unpaid').length;
+  const mrr       = MOCK_USERS.reduce((s, u) => s + u.stripe_mrr, 0);
+  const xeroCount = MOCK_USERS.filter(u => (u.stripe_status === 'active' || u.stripe_status === 'cancel_pending') && u.xero_connected).length;
+
+  document.getElementById('m-total').textContent     = MOCK_USERS.length;
+  document.getElementById('m-active').textContent    = active;
+  document.getElementById('m-trial').textContent     = trial;
+  document.getElementById('m-cancelled').textContent = cancelled;
+  document.getElementById('m-mrr').textContent       = '$' + mrr.toLocaleString();
+  document.getElementById('m-xero').textContent      = active ? xeroCount + '/' + active : '—';
+}
+
+function renderPlanBreakdown(eid, aid, pid, erev, arev, prev) {
+  const paying = MOCK_USERS.filter(u => u.stripe_status === 'active' || u.stripe_status === 'cancel_pending');
+  const ec = paying.filter(u => u.stripe_plan === 'Essential').length;
+  const ac = paying.filter(u => u.stripe_plan === 'Advanced').length;
+  const pc = paying.filter(u => u.stripe_plan === 'Pro').length;
+  document.getElementById(eid).textContent = ec;
+  document.getElementById(aid).textContent = ac;
+  document.getElementById(pid).textContent = pc;
+  document.getElementById(erev).textContent = '$' + (ec * 100).toLocaleString() + '/mo';
+  document.getElementById(arev).textContent = '$' + (ac * 150).toLocaleString() + '/mo';
+  document.getElementById(prev).textContent = '$' + (pc * 200).toLocaleString() + '/mo';
+}
+
+function renderRecentTable() {
+  const sorted = [...MOCK_USERS].sort((a, b) => new Date(b.stripe_created) - new Date(a.stripe_created)).slice(0, 5);
+  document.getElementById('recentTableBody').innerHTML = sorted.map(u => `
+    <tr data-status="${u.stripe_status}" data-plan="${u.stripe_plan}" data-search="${(u.stripe_name+' '+u.stripe_email+' '+u.stripe_company).toLowerCase()}">
+      <td><strong>${u.stripe_name}</strong></td>
+      <td>${u.stripe_company}</td>
+      <td>${planBadge(u.stripe_plan)}</td>
+      <td>${statusBadge(u.stripe_status)}</td>
+      <td>${xeroBadge(u.xero_connected)}</td>
+      <td>${u.stripe_status === 'trialing' ? fmt(u.stripe_trial_end) : '—'}</td>
+      <td>${fmt(u.stripe_created)}</td>
+    </tr>`).join('');
+}
+
+function renderUsersTable() {
+  document.getElementById('usersTableBody').innerHTML = MOCK_USERS.map(u => `
+    <tr data-status="${u.stripe_status}" data-plan="${u.stripe_plan}" data-search="${(u.stripe_name+' '+u.stripe_email+' '+u.stripe_company).toLowerCase()}">
+      <td><strong>${u.stripe_name}</strong></td>
+      <td>${u.stripe_company}</td>
+      <td style="color:var(--muted);font-size:12px;">${u.stripe_email}</td>
+      <td>${planBadge(u.stripe_plan)}</td>
+      <td>${statusBadge(u.stripe_status)}</td>
+      <td>${xeroBadge(u.xero_connected)}</td>
+      <td style="min-width:120px;">${tokenBar(u.token_usage, u.token_limit)}</td>
+      <td>${u.stripe_current_period_end ? fmt(u.stripe_current_period_end) : '—'}</td>
+      <td>${fmt(u.stripe_created)}</td>
+    </tr>`).join('');
+}
+
+function renderTrialsTable() {
+  const trials = MOCK_USERS.filter(u => u.stripe_status === 'trialing');
+  document.getElementById('trialsTableBody').innerHTML = trials.length ? trials.map(u => `
+    <tr>
+      <td><strong>${u.stripe_name}</strong></td>
+      <td>${u.stripe_company}</td>
+      <td style="color:var(--muted);font-size:12px;">${u.stripe_email}</td>
+      <td>${planBadge(u.stripe_plan)}</td>
+      <td>${xeroBadge(u.xero_connected)}</td>
+      <td>${fmt(u.stripe_trial_end)}</td>
+      <td>${daysLeft(u.stripe_trial_end)}</td>
+      <td>${fmt(u.stripe_created)}</td>
+    </tr>`).join('') :
+    `<tr><td colspan="8"><div class="empty-state"><p>No users currently in trial.</p></div></td></tr>`;
+}
+
+function renderCancelledTable() {
+  const churn = MOCK_USERS.filter(u => u.stripe_status === 'canceled' || u.stripe_status === 'cancel_pending' || u.stripe_status === 'unpaid');
+  document.getElementById('cancelledTableBody').innerHTML = churn.length ? churn.map(u => `
+    <tr>
+      <td><strong>${u.stripe_name}</strong></td>
+      <td>${u.stripe_company}</td>
+      <td style="color:var(--muted);font-size:12px;">${u.stripe_email}</td>
+      <td>${planBadge(u.stripe_plan)}</td>
+      <td>${statusBadge(u.stripe_status)}</td>
+      <td>${cancelReasonLabel(u.stripe_cancel_reason)}</td>
+      <td>${u.stripe_canceled_at ? fmt(u.stripe_canceled_at) : (u.stripe_current_period_end ? 'Ends ' + fmt(u.stripe_current_period_end) : '—')}</td>
+      <td>${fmt(u.stripe_created)}</td>
+    </tr>`).join('') :
+    `<tr><td colspan="8"><div class="empty-state"><p>No cancelled subscriptions.</p></div></td></tr>`;
+}
+
+function renderRevenue() {
+  const paying = MOCK_USERS.filter(u => u.stripe_status === 'active' || u.stripe_status === 'cancel_pending');
+  const mrr    = MOCK_USERS.reduce((s, u) => s + u.stripe_mrr, 0);
+  const arr    = mrr * 12;
+  const arpu   = paying.length ? Math.round(mrr / paying.length) : 0;
+  const total  = MOCK_USERS.length;
+  const convRate = total ? Math.round((paying.length / total) * 100) + '%' : '—';
+
+  document.getElementById('rev-mrr').textContent  = '$' + mrr.toLocaleString();
+  document.getElementById('rev-arr').textContent  = '$' + arr.toLocaleString();
+  document.getElementById('rev-arpu').textContent = '$' + arpu;
+  document.getElementById('rev-conv').textContent = convRate;
+
+  renderPlanBreakdown(
+    'rev-pb-essential', 'rev-pb-advanced', 'rev-pb-pro',
+    'rev-pb-essential-rev', 'rev-pb-advanced-rev', 'rev-pb-pro-rev'
+  );
+}
+
+/* ============================================================
+   SEARCH & FILTER
+   ============================================================ */
+
+function filterTable(query, tbodyId) {
+  const q = query.toLowerCase();
+  document.querySelectorAll(`#${tbodyId} tr`).forEach(row => {
+    row.style.display = (row.dataset.search || '').includes(q) ? '' : 'none';
+  });
+}
+
+function filterByStatus(status, tbodyId) {
+  document.querySelectorAll(`#${tbodyId} tr`).forEach(row => {
+    row.style.display = (!status || row.dataset.status === status) ? '' : 'none';
+  });
+}
+
+function filterByPlan(plan, tbodyId) {
+  document.querySelectorAll(`#${tbodyId} tr`).forEach(row => {
+    row.style.display = (!plan || row.dataset.plan === plan) ? '' : 'none';
+  });
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+
+function loadSettings() {
+  document.getElementById('cfg-azure-url').value     = localStorage.getItem('cfg_azure_url')     || '';
+  document.getElementById('cfg-azure-key').value     = localStorage.getItem('cfg_azure_key')     || '';
+  document.getElementById('cfg-stripe-key').value    = localStorage.getItem('cfg_stripe_key')    || '';
+  document.getElementById('cfg-stripe-webhook').value = localStorage.getItem('cfg_stripe_webhook') || '';
+  document.getElementById('cfg-admin-email').value   = localStorage.getItem('admin_email') || DEFAULT_CREDS.email;
+}
+
+function saveSettings() {
+  localStorage.setItem('cfg_azure_url',      document.getElementById('cfg-azure-url').value);
+  localStorage.setItem('cfg_azure_key',      document.getElementById('cfg-azure-key').value);
+  localStorage.setItem('cfg_stripe_key',     document.getElementById('cfg-stripe-key').value);
+  localStorage.setItem('cfg_stripe_webhook', document.getElementById('cfg-stripe-webhook').value);
+  const email = document.getElementById('cfg-admin-email').value;
+  const pass  = document.getElementById('cfg-admin-pass').value;
+  if (email) localStorage.setItem('admin_email', email);
+  if (pass)  localStorage.setItem('admin_pass',  pass);
+  alert('Settings saved. Changes take effect on next login.');
+}
+
+/* ============================================================
+   REFRESH
+   ============================================================ */
+
+function refreshData() {
+  const btn = document.querySelector('.refresh-btn');
+  btn.style.color = 'var(--teal-400)';
+  document.getElementById('topbarMeta').textContent = 'Refreshing…';
+  setTimeout(() => {
+    renderAll();
+    btn.style.color = '';
+    const now = new Date().toLocaleTimeString('en-AU', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('topbarMeta').textContent = `Last synced: ${now} · Data source: Azure + Stripe`;
+  }, 800);
+}
+</script>
+</body>
+</html>

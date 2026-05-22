@@ -1,0 +1,162 @@
+/* ============================================================
+   Accountant AI — page-specific styles
+   Extends css/styles.css, uses same CSS variables
+   ============================================================ */
+
+/* Product tag */
+.ai-product-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--teal-400);
+  background: rgba(29, 184, 150, 0.1);
+  border: 1px solid rgba(29, 184, 150, 0.25);
+  padding: 5px 14px;
+  border-radius: 99px;
+  margin-bottom: 28px;
+}
+
+.ai-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--teal-400);
+  animation: pulse 2s infinite;
+}
+
+.ai-em { color: var(--teal-400); }
+
+/* Primary button size override */
+.ai-btn-lg {
+  font-size: 15px !important;
+  padding: 12px 28px !important;
+}
+
+/* Hero note */
+.ai-hero-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: -16px;
+  margin-bottom: 28px;
+}
+
+/* Xero badge */
+.ai-xero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--teal-400);
+  background: rgba(29, 184, 150, 0.08);
+  border: 1px solid rgba(29, 184, 150, 0.2);
+  padding: 7px 16px;
+  border-radius: 99px;
+  margin-bottom: 40px;
+}
+
+/* Hero stats strip */
+.ai-hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.ai-hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 40px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.ai-hero-stat-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.ai-stat-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--teal-400);
+  letter-spacing: -0.02em;
+}
+
+.ai-stat-lbl {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Features grid */
+.ai-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 52px;
+}
+
+.ai-feature-large {
+  grid-column: span 2;
+}
+
+.ai-feature-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.ai-feature-card:hover {
+  background: var(--card-hover);
+  border-color: rgba(29, 184, 150, 0.3);
+}
+
+.ai-feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(29, 184, 150, 0.1);
+  color: var(--teal-400);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.ai-feature-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.ai-feature-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* Active nav link */
+.nav-links a.active { color: var(--teal-400); }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .ai-feature-large { grid-column: span 1; }
+  .ai-hero-stats { flex-direction: column; }
+  .ai-hero-stat-divider { width: 80%; height: 1px; }
+  .ai-hero-stat { padding: 16px 24px; }
+}

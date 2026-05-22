@@ -1,0 +1,183 @@
+/* ============================================================
+   Propertiq — page-specific styles
+   Extends css/styles.css, uses same CSS variables
+   ============================================================ */
+
+/* Product tag (replaces hero badge) */
+.pq-product-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #5ba6ef;
+  background: rgba(91, 166, 239, 0.1);
+  border: 1px solid rgba(91, 166, 239, 0.25);
+  padding: 5px 14px;
+  border-radius: 99px;
+  margin-bottom: 28px;
+}
+
+.pq-tag-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #5ba6ef;
+  animation: pulse 2s infinite;
+}
+
+/* Hero accent colour override for Propertiq (blue instead of teal) */
+.pq-hero .hero::before {
+  background: radial-gradient(ellipse, rgba(91, 166, 239, 0.1) 0%, transparent 70%);
+}
+
+.pq-em { color: #5ba6ef; }
+
+/* Primary button — Propertiq blue */
+.pq-btn, .pq-btn-lg {
+  background: #378ADD !important;
+  color: #fff !important;
+}
+
+.pq-btn:hover, .pq-btn-lg:hover {
+  background: #185FA5 !important;
+}
+
+.pq-btn-lg {
+  font-size: 15px !important;
+  padding: 12px 28px !important;
+}
+
+/* Hero note */
+.pq-hero-note {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: -16px;
+  margin-bottom: 40px;
+}
+
+/* Hero stats strip */
+.pq-hero-stats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 48px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  flex-wrap: wrap;
+}
+
+.pq-hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 40px;
+  flex: 1;
+  min-width: 140px;
+}
+
+.pq-hero-stat-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+.pq-stat-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: #5ba6ef;
+  letter-spacing: -0.02em;
+}
+
+.pq-stat-lbl {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Features grid */
+.pq-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 52px;
+}
+
+.pq-feature-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.pq-feature-card:hover {
+  background: var(--card-hover);
+  border-color: rgba(91, 166, 239, 0.3);
+}
+
+.pq-feature-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(91, 166, 239, 0.1);
+  color: #5ba6ef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.pq-feature-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.pq-feature-card p {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+/* How it works step icon — Propertiq blue */
+.pq-step-icon { color: #5ba6ef; }
+
+/* Tax disclaimer note */
+.pq-tax-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.pq-tax-note svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--muted);
+}
+
+/* Active nav link for this page */
+.nav-links a.active {
+  color: #5ba6ef;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .pq-hero-stats { flex-direction: column; }
+  .pq-hero-stat-divider { width: 80%; height: 1px; }
+  .pq-hero-stat { padding: 16px 24px; }
+}
