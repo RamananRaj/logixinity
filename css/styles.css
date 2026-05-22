@@ -277,11 +277,41 @@ button { cursor: pointer; font-family: var(--font); }
 }
 
 .hero-sub {
-  font-size: 18px;
+  font-size: 17px;
   color: var(--text-secondary);
-  max-width: 500px;
-  margin: 0 auto 40px;
   line-height: 1.65;
+  margin: 0;
+}
+
+.hero-sub-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 40px;
+  max-width: 780px;
+  margin: 0 auto 40px;
+  text-align: left;
+}
+
+.hero-sub-split .hero-sub {
+  background: #ffffff;
+  border: 1px solid var(--gray-200);
+  border-radius: 14px;
+  padding: 20px 22px;
+}
+
+.hero-sub-split .hero-sub strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--navy-900);
+  letter-spacing: 0.02em;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 640px) {
+  .hero-sub-split {
+    grid-template-columns: 1fr;
+  }
 }
 
 .hero-btns {
