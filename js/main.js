@@ -80,7 +80,38 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ----------------------------------------------------------
-     5. MOBILE NAV TOGGLE (hamburger, injected dynamically)
+     5. LOGIN DROPDOWN TOGGLE
+  ---------------------------------------------------------- */
+  const loginWrap = document.getElementById('navLoginWrap');
+  const loginToggle = document.getElementById('loginToggle');
+  const loginDropdown = document.getElementById('loginDropdown');
+
+  if (loginWrap && loginToggle && loginDropdown) {
+    loginToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const open = loginWrap.classList.toggle('open');
+      loginToggle.setAttribute('aria-expanded', String(open));
+    });
+
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+      if (!loginWrap.contains(e.target)) {
+        loginWrap.classList.remove('open');
+        loginToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        loginWrap.classList.remove('open');
+        loginToggle.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  /* ----------------------------------------------------------
+     6. MOBILE NAV TOGGLE (hamburger, injected dynamically)
   ---------------------------------------------------------- */
   const navInner = document.querySelector('.nav-inner');
   if (navInner) {
