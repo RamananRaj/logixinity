@@ -708,15 +708,19 @@ CREATE TABLE IF NOT EXISTS blog_posts (
 -- 2. Enable Row Level Security
 ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
 
--- 3. Public can read published posts (for blog.html)
+-- 3. Remove old policies first (safe to re-run)
+DROP POLICY IF EXISTS "Public read published" ON blog_posts;
+DROP POLICY IF EXISTS "Anon full access" ON blog_posts;
+
+-- 4. Public can read published posts (for blog.html)
 CREATE POLICY "Public read published"
   ON blog_posts FOR SELECT
   USING (published = true);
 
--- 4. Anon can do everything (admin page uses anon key)
---    In production, restrict this to authenticated users
+-- 5. Anon can do everything (admin page uses anon key)
 CREATE POLICY "Anon full access"
   ON blog_posts FOR ALL
+  TO anon
   USING (true)
   WITH CHECK (true);</pre>
           </div>
@@ -818,6 +822,16 @@ function initSupabase(cb) {
   const onReady = () => {
     supabase = window.supabase.createClient(url, key);
     document.getElementById('sbNotice').style.display = 'none';
+    // Quick connection test
+    supabase.from('blog_posts').select('count', { count: 'exact', head: true }).then(({ error }) => {
+      const meta = document.getElementById('topbarMeta');
+      if (error) {
+        meta.innerHTML = 'Logixinity blog · <span style="color:#f87171;">⚠ Supabase error: ' + error.message + '</span>';
+        alert('⚠ Supabase connection error:\n\n' + error.message + '\n\nPlease re-run the SQL in Settings → Database Setup, then refresh.');
+      } else {
+        meta.innerHTML = 'Logixinity blog · <span style="color:#34d399;">● Connected to Supabase</span>';
+      }
+    });
     if (cb) cb(); else fetchPosts();
   };
 
@@ -1056,8 +1070,9 @@ async function savePost() {
 
   if (error) {
     showSaveStatus('error', 'Save failed: ' + error.message);
+    alert('❌ Save failed!\n\nError: ' + error.message + '\n\nCode: ' + (error.code || 'none') + '\n\nCheck Supabase RLS policies — see Settings → Database Setup.');
   } else {
-    showSaveStatus('success', 'Post saved successfully.');
+    showSaveStatus('success', '✅ Saved to Supabase successfully!');
     await fetchPosts();
   }
 }
@@ -1067,7 +1082,7 @@ function showSaveStatus(type, msg) {
   el.className = 'save-status ' + type;
   el.textContent = msg;
   if (type === 'success') {
-    setTimeout(() => { el.className = 'save-status'; }, 4000);
+    setTimeout(() => { el.className = 'save-status'; }, 10000);
   }
 }
 
