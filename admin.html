@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Logixinity Admin</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <style>
+    /* ── Unified Admin Extensions ── */
+
+    /* Sidebar section badges */
+    .sidebar-product-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 100px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .badge-live  { background: rgba(45,212,170,0.15); color: var(--teal-400); }
+    .badge-mock  { background: rgba(255,255,255,0.08); color: var(--muted); }
+
+    /* ── BLOG EDITOR ── */
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .editor-grid { grid-template-columns: 1fr; } }
+
+    .editor-main, .editor-sidebar { display: flex; flex-direction: column; gap: 16px; }
+
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label {
+      font-size: 12px; font-weight: 600; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .form-group input, .form-group textarea, .form-group select {
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border-md);
+      border-radius: 8px; padding: 10px 14px; color: var(--white);
+      font-family: var(--font); font-size: 14px; outline: none;
+      transition: border-color 0.15s; width: 100%;
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--teal-400); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: rgba(255,255,255,0.25); }
+    .form-group select option { background: #1e3a6e; color: var(--white); }
+    .form-group textarea { resize: vertical; min-height: 320px; line-height: 1.65; }
+    .form-group textarea.content-area {
+      min-height: 460px; font-family: 'Courier New', Courier, monospace; font-size: 13px;
+    }
+    .content-hint { font-size: 11.5px; color: var(--muted); line-height: 1.5; margin-top: 2px; }
+    .content-hint code { background: rgba(255,255,255,0.08); border-radius: 3px; padding: 1px 4px; font-size: 11px; }
+
+    .meta-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) { .meta-row { grid-template-columns: 1fr; } }
+
+    /* Publish toggle */
+    .publish-toggle {
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border-md);
+      border-radius: 10px; padding: 14px 16px; cursor: pointer;
+      transition: background 0.15s; user-select: none;
+    }
+    .publish-toggle:hover { background: rgba(255,255,255,0.07); }
+    .toggle-switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track { position: absolute; inset: 0; background: rgba(255,255,255,0.15); border-radius: 20px; transition: background 0.2s; }
+    .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; background: var(--white); border-radius: 50%; transition: transform 0.2s; }
+    .toggle-switch input:checked ~ .toggle-track { background: var(--teal-400); }
+    .toggle-switch input:checked ~ .toggle-thumb { transform: translateX(16px); }
+    .toggle-label-title { font-size: 13px; font-weight: 600; color: var(--white); }
+    .toggle-label-sub { font-size: 11.5px; color: var(--muted); }
+
+    /* Cover preview */
+    .cover-preview {
+      width: 100%; height: 140px; background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--muted); font-size: 12px;
+    }
+    .cover-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Buttons */
+    .btn-save {
+      flex: 1; padding: 11px 20px; background: var(--teal-400); color: #05101f;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s, opacity 0.15s; width: 100%;
+    }
+    .btn-save:hover { background: var(--teal-500); }
+    .btn-save:disabled { opacity: 0.5; cursor: default; }
+    .btn-secondary {
+      padding: 11px 16px; background: rgba(255,255,255,0.06); color: var(--white);
+      border: 1px solid var(--border-md); border-radius: 8px; font-size: 14px;
+      font-weight: 600; cursor: pointer; transition: background 0.15s; width: 100%;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+    .btn-danger {
+      padding: 11px 16px; background: var(--danger-bg); color: var(--danger);
+      border: 1px solid rgba(248,113,113,0.25); border-radius: 8px; font-size: 14px;
+      font-weight: 600; cursor: pointer; transition: background 0.15s; width: 100%;
+    }
+    .btn-danger:hover { background: rgba(248,113,113,0.18); }
+
+    /* Save status */
+    .save-status { font-size: 13px; padding: 10px 14px; border-radius: 8px; display: none; }
+    .save-status.success { display: block; background: var(--success-bg); color: var(--success); border: 1px solid rgba(52,211,153,0.2); }
+    .save-status.error   { display: block; background: var(--danger-bg);  color: var(--danger);  border: 1px solid rgba(248,113,113,0.2); }
+
+    /* Row actions */
+    .row-actions { display: flex; gap: 6px; align-items: center; }
+    .row-btn { padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid transparent; transition: background 0.15s; }
+    .row-btn.edit { background: rgba(255,255,255,0.06); color: var(--white); border-color: var(--border-md); }
+    .row-btn.edit:hover { background: rgba(255,255,255,0.12); }
+    .row-btn.del  { background: var(--danger-bg); color: var(--danger); border-color: rgba(248,113,113,0.2); }
+    .row-btn.del:hover { background: rgba(248,113,113,0.18); }
+
+    /* Badges */
+    .badge.published  { background: var(--success-bg); color: var(--success); }
+    .badge.draft      { background: rgba(255,255,255,0.06); color: var(--muted); }
+    .badge.connected  { background: var(--success-bg); color: var(--success); }
+    .badge.not-connected { background: rgba(255,255,255,0.05); color: var(--muted); }
+
+    .tag-pill {
+      display: inline-block; background: rgba(45,212,170,0.12); color: var(--teal-400);
+      border-radius: 100px; padding: 2px 9px; font-size: 11px; font-weight: 600; margin: 1px 2px 1px 0;
+    }
+
+    /* Filter chips */
+    .section-card-subheader {
+      padding: 12px 24px; border-bottom: 1px solid var(--border);
+      display: flex; gap: 10px; flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 5px 12px; border-radius: 100px; font-size: 12px; font-weight: 600;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+      color: var(--muted); cursor: pointer; transition: all 0.15s;
+    }
+    .filter-chip.active, .filter-chip:hover {
+      background: rgba(45,212,170,0.1); border-color: rgba(45,212,170,0.3); color: var(--teal-400);
+    }
+
+    /* Top-bar new post btn */
+    .new-post-btn {
+      padding: 10px 18px; background: var(--teal-400); color: #05101f;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.15s; white-space: nowrap;
+    }
+    .new-post-btn:hover { background: var(--teal-500); }
+
+    /* Token bar */
+    .token-bar-wrap { display: flex; align-items: center; gap: 8px; min-width: 110px; }
+    .token-bar-bg { flex: 1; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    .token-bar-fill { height: 100%; background: var(--teal-400); border-radius: 3px; transition: width 0.3s; }
+    .token-bar-fill.warn { background: var(--warning); }
+    .token-bar-fill.high { background: var(--danger); }
+    .token-bar-label { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+    /* Plan breakdown */
+    .plan-breakdown-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+    @media (max-width: 640px) { .plan-breakdown-grid { grid-template-columns: 1fr; } }
+    .plan-breakdown-card { background: rgba(255,255,255,0.04); border: 1px solid var(--border-md); border-radius: 12px; padding: 18px 20px; }
+    .plan-breakdown-card.essential { border-color: rgba(45,212,170,0.2); }
+    .plan-breakdown-card.advanced  { border-color: rgba(99,179,237,0.2); }
+    .plan-breakdown-card.pro       { border-color: rgba(167,139,250,0.2); }
+    .plan-name  { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .plan-count { font-size: 28px; font-weight: 800; color: var(--white); }
+    .plan-revenue { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+    /* Azure note */
+    .azure-note {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border-md);
+      border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--muted); line-height: 1.6;
+    }
+    .azure-note svg { flex-shrink: 0; margin-top: 1px; }
+    .azure-note strong { color: var(--white); }
+    .azure-note code { background: rgba(255,255,255,0.08); border-radius: 3px; padding: 1px 5px; font-size: 12px; color: var(--teal-400); }
+
+    /* SQL block */
+    .sql-block {
+      background: rgba(0,0,0,0.3); border: 1px solid var(--border-md); border-radius: 8px;
+      padding: 16px; font-family: 'Courier New', Courier, monospace; font-size: 12px;
+      line-height: 1.7; color: #a8d8c0; white-space: pre; overflow-x: auto;
+    }
+
+    /* Supabase notice */
+    .sb-notice {
+      display: flex; align-items: flex-start; gap: 12px;
+      background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25);
+      border-radius: 10px; padding: 14px 16px; font-size: 13px; color: var(--warning);
+      line-height: 1.5; margin-bottom: 20px;
+    }
+    .sb-notice svg { flex-shrink: 0; margin-top: 1px; }
+    .sb-notice a { color: var(--teal-400); text-decoration: underline; cursor: pointer; }
+
+    /* Mock data banner */
+    .mock-banner {
+      display: flex; align-items: center; gap: 10px;
+      background: rgba(99,179,237,0.07); border: 1px solid rgba(99,179,237,0.2);
+      border-radius: 10px; padding: 12px 16px; font-size: 13px; color: #93c5fd;
+      margin-bottom: 20px;
+    }
+
+    /* Delete modal */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(5,16,26,0.85);
+      z-index: 100; display: none; align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: var(--navy-800); border: 1px solid var(--border-md); border-radius: 14px; padding: 28px; max-width: 380px; width: 90%; }
+    .modal-box h3 { font-size: 16px; font-weight: 700; color: var(--white); margin-bottom: 10px; }
+    .modal-box p  { font-size: 14px; color: var(--muted); margin-bottom: 22px; line-height: 1.5; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .modal-actions .btn-secondary { width: auto; }
+    .modal-actions .btn-danger { width: auto; }
+
+    /* Empty state */
+    .empty-state { padding: 48px 24px; text-align: center; }
+    .empty-state p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+
+    /* Table controls */
+    .table-controls { display: flex; gap: 10px; flex-wrap: wrap; padding: 14px 24px; border-bottom: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN SCREEN
+============================================================ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-dot"></div>
+      Logixinity
+    </div>
+    <div class="login-subtitle">Admin Console</div>
+    <h2>Sign in</h2>
+    <div class="form-group" style="margin-bottom:14px;">
+      <label for="adminPass">Password</label>
+      <input type="password" id="adminPass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" onclick="handleLogin()">Sign in</button>
+    <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN SHELL
+============================================================ -->
+<div class="admin-wrap" id="adminWrap">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-dot"></div>
+      Logixinity
+    </div>
+    <div class="sidebar-product">Admin Console</div>
+
+    <nav class="sidebar-nav">
+
+      <div class="sidebar-section">
+        Blog <span class="sidebar-product-badge badge-live">Live</span>
+      </div>
+      <button class="sidebar-link active" onclick="showPanel('blog-posts', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        All Posts
+      </button>
+      <button class="sidebar-link" onclick="openNewPost()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Post
+      </button>
+
+      <div class="sidebar-section">
+        Gen LXI <span class="sidebar-product-badge badge-mock">Mock data</span>
+      </div>
+      <button class="sidebar-link" onclick="showPanel('genlxi-dashboard', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        Dashboard
+      </button>
+      <button class="sidebar-link" onclick="showPanel('genlxi-users', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        All Users
+      </button>
+      <button class="sidebar-link" onclick="showPanel('genlxi-revenue', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Revenue & Plans
+      </button>
+
+      <div class="sidebar-section">System</div>
+      <button class="sidebar-link" onclick="showPanel('settings', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Settings
+      </button>
+
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-name">Admin</div>
+      <div>Logixinity Internal</div>
+      <button class="logout-btn" onclick="handleLogout()">← Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1 id="topbarTitle">Blog Posts</h1>
+        <div class="topbar-meta" id="topbarMeta">Logixinity Admin · Powered by Supabase + Stripe</div>
+      </div>
+      <button class="new-post-btn" id="topbarNewPost" onclick="openNewPost()">+ New post</button>
+    </div>
+
+    <div class="admin-content">
+
+
+      <!-- ======================================================
+           PANEL: BLOG — ALL POSTS
+      ====================================================== -->
+      <div class="admin-panel active" id="panel-blog-posts">
+
+        <div id="sbNotice" class="sb-notice" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Supabase not configured. <a onclick="showPanel('settings', document.querySelectorAll('.sidebar-link')[6])">Go to Settings →</a></span>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <div><h2>Blog Posts</h2><p id="postsCount">Loading…</p></div>
+          </div>
+          <div class="section-card-subheader">
+            <button class="filter-chip active" onclick="filterPosts('all', this)">All</button>
+            <button class="filter-chip" onclick="filterPosts('published', this)">Published</button>
+            <button class="filter-chip" onclick="filterPosts('draft', this)">Draft</button>
+          </div>
+          <div class="section-card-body">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Title</th><th>Author</th><th>Tags</th><th>Status</th><th>Publish Date</th><th>Actions</th></tr></thead>
+                <tbody id="postsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-blog-posts -->
+
+
+      <!-- ======================================================
+           PANEL: BLOG — EDITOR
+      ====================================================== -->
+      <div class="admin-panel" id="panel-blog-editor">
+        <div class="editor-grid">
+
+          <!-- Left -->
+          <div class="editor-main">
+            <div class="section-card">
+              <div class="section-card-header">
+                <div><h2 id="editorTitle">New Post</h2><p>HTML is supported in the content field.</p></div>
+              </div>
+              <div class="section-card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+                <div class="form-group">
+                  <label for="fTitle">Title *</label>
+                  <input type="text" id="fTitle" placeholder="e.g. How AI is changing Australian accounting" />
+                </div>
+
+                <div class="meta-row">
+                  <div class="form-group">
+                    <label for="fAuthor">Author</label>
+                    <input type="text" id="fAuthor" placeholder="Logixinity" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fDate">Publish Date</label>
+                    <input type="date" id="fDate" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fTags">Tags <span style="font-weight:400;text-transform:none;letter-spacing:0;">(comma-separated)</span></label>
+                    <input type="text" id="fTags" placeholder="e.g. Propiq, AI" />
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="fContent">Content *</label>
+                  <textarea class="content-area" id="fContent" placeholder="Write your post content here using HTML:&#10;&#10;<h2>Section heading</h2>&#10;<p>Paragraph text.</p>&#10;<strong>Bold</strong>, <em>italic</em>&#10;<ul><li>Bullet point</li></ul>"></textarea>
+                  <div class="content-hint">
+                    Use <code>&lt;h2&gt;</code> <code>&lt;p&gt;</code> <code>&lt;strong&gt;</code> <code>&lt;em&gt;</code> <code>&lt;ul&gt;/&lt;li&gt;</code> <code>&lt;a href="..."&gt;</code> <code>&lt;blockquote&gt;</code> <code>&lt;img src="..."&gt;</code>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Right sidebar -->
+          <div class="editor-sidebar">
+
+            <div class="section-card">
+              <div class="section-card-header" style="padding-bottom:12px;"><div><h2>Publish</h2></div></div>
+              <div class="section-card-body" style="display:flex;flex-direction:column;gap:12px;">
+
+                <label class="publish-toggle">
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="fPublished" />
+                    <div class="toggle-track"></div>
+                    <div class="toggle-thumb"></div>
+                  </div>
+                  <div class="toggle-label">
+                    <div class="toggle-label-title" id="publishToggleLabel">Draft</div>
+                    <div class="toggle-label-sub">Toggle to publish</div>
+                  </div>
+                </label>
+
+                <button class="btn-save" id="btnSave" onclick="savePost()">Save post</button>
+                <div class="save-status" id="saveStatus"></div>
+                <button class="btn-danger" id="btnDelete" onclick="confirmDelete()" style="display:none;">Delete post</button>
+                <button class="btn-secondary" onclick="cancelEdit()">← Back to posts</button>
+
+              </div>
+            </div>
+
+            <div class="section-card">
+              <div class="section-card-header" style="padding-bottom:12px;"><div><h2>Cover Image</h2></div></div>
+              <div class="section-card-body" style="display:flex;flex-direction:column;gap:12px;">
+                <div class="cover-preview" id="coverPreview"><span>No image set</span></div>
+                <div class="form-group">
+                  <label for="fCover">Image URL</label>
+                  <input type="url" id="fCover" placeholder="https://..." oninput="updateCoverPreview()" />
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div><!-- /panel-blog-editor -->
+
+
+      <!-- ======================================================
+           PANEL: GEN LXI — DASHBOARD
+      ====================================================== -->
+      <div class="admin-panel" id="panel-genlxi-dashboard">
+
+        <div class="mock-banner">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Gen LXI is pre-launch — showing mock data. Wire up Stripe + Azure in Settings when ready.
+        </div>
+
+        <div class="metrics-grid">
+          <div class="metric-card"><div class="metric-label">Total Users</div><div class="metric-value" id="m-total">—</div><div class="metric-sub">Registered customers</div></div>
+          <div class="metric-card"><div class="metric-label">Active</div><div class="metric-value teal" id="m-active">—</div><div class="metric-sub">Paying subscribers</div></div>
+          <div class="metric-card"><div class="metric-label">In Trial</div><div class="metric-value warn" id="m-trial">—</div><div class="metric-sub">Trialing users</div></div>
+          <div class="metric-card"><div class="metric-label">Cancelled</div><div class="metric-value danger" id="m-cancelled">—</div><div class="metric-sub">Churned</div></div>
+          <div class="metric-card"><div class="metric-label">MRR</div><div class="metric-value teal" id="m-mrr">—</div><div class="metric-sub">Monthly recurring revenue</div></div>
+          <div class="metric-card"><div class="metric-label">Xero Connected</div><div class="metric-value" id="m-xero">—</div><div class="metric-sub">Of active users</div></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header"><div><h2>Recent Registrations</h2><p>Newest users · Stripe + Azure</p></div></div>
+          <div class="section-card-body">
+            <div class="table-wrap">
+              <table id="recentTable">
+                <thead><tr><th>Customer</th><th>Company</th><th>Plan</th><th>Status</th><th>Xero</th><th>Registered</th></tr></thead>
+                <tbody id="recentTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header"><div><h2>Plan Breakdown</h2><p>Active subscribers by tier</p></div></div>
+          <div class="section-card-body">
+            <div class="plan-breakdown-grid">
+              <div class="plan-breakdown-card essential"><div class="plan-name">Essential</div><div class="plan-count" id="pb-essential">—</div><div class="plan-revenue" id="pb-essential-rev">— /mo</div></div>
+              <div class="plan-breakdown-card advanced"><div class="plan-name">Advanced</div><div class="plan-count" id="pb-advanced">—</div><div class="plan-revenue" id="pb-advanced-rev">— /mo</div></div>
+              <div class="plan-breakdown-card pro"><div class="plan-name">Pro</div><div class="plan-count" id="pb-pro">—</div><div class="plan-revenue" id="pb-pro-rev">— /mo</div></div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-genlxi-dashboard -->
+
+
+      <!-- ======================================================
+           PANEL: GEN LXI — ALL USERS
+      ====================================================== -->
+      <div class="admin-panel" id="panel-genlxi-users">
+        <div class="section-card">
+          <div class="section-card-header"><div><h2>All Users</h2><p>Complete customer list · Stripe + Azure</p></div></div>
+          <div class="table-controls">
+            <input class="search-input" type="text" placeholder="Search by name, email or company…" oninput="filterTable(this.value, 'usersTableBody')" />
+            <select class="filter-select" onchange="filterByStatus(this.value, 'usersTableBody')">
+              <option value="">All statuses</option>
+              <option value="active">Active</option>
+              <option value="trialing">In Trial</option>
+              <option value="canceled">Cancelled</option>
+              <option value="cancel_pending">Cancelling</option>
+              <option value="past_due">Past Due</option>
+            </select>
+            <select class="filter-select" onchange="filterByPlan(this.value, 'usersTableBody')">
+              <option value="">All plans</option>
+              <option value="Essential">Essential</option>
+              <option value="Advanced">Advanced</option>
+              <option value="Pro">Pro</option>
+            </select>
+          </div>
+          <div class="section-card-body">
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Customer</th><th>Company</th><th>Email</th><th>Plan</th><th>Status</th><th>Xero</th><th>Token Usage</th><th>Next Billing</th><th>Registered</th></tr></thead>
+                <tbody id="usersTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-genlxi-users -->
+
+
+      <!-- ======================================================
+           PANEL: GEN LXI — REVENUE
+      ====================================================== -->
+      <div class="admin-panel" id="panel-genlxi-revenue">
+        <div class="metrics-grid">
+          <div class="metric-card"><div class="metric-label">Total MRR</div><div class="metric-value teal" id="rev-mrr">—</div><div class="metric-sub">Active + cancelling</div></div>
+          <div class="metric-card"><div class="metric-label">ARR (est.)</div><div class="metric-value" id="rev-arr">—</div><div class="metric-sub">MRR × 12</div></div>
+          <div class="metric-card"><div class="metric-label">Avg Revenue / User</div><div class="metric-value" id="rev-arpu">—</div><div class="metric-sub">Per active subscriber</div></div>
+          <div class="metric-card"><div class="metric-label">Trial Conversion</div><div class="metric-value teal" id="rev-conv">—</div><div class="metric-sub">Trial → Active rate</div></div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-header"><div><h2>Revenue by Plan</h2><p>Subscribers and monthly revenue per tier</p></div></div>
+          <div class="section-card-body">
+            <div class="plan-breakdown-grid">
+              <div class="plan-breakdown-card essential"><div class="plan-name">Essential · $100/mo</div><div class="plan-count" id="rev-pb-essential">—</div><div class="plan-revenue" id="rev-pb-essential-rev">— /mo</div></div>
+              <div class="plan-breakdown-card advanced"><div class="plan-name">Advanced · $150/mo</div><div class="plan-count" id="rev-pb-advanced">—</div><div class="plan-revenue" id="rev-pb-advanced-rev">— /mo</div></div>
+              <div class="plan-breakdown-card pro"><div class="plan-name">Pro · $200/mo</div><div class="plan-count" id="rev-pb-pro">—</div><div class="plan-revenue" id="rev-pb-pro-rev">— /mo</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="section-card">
+          <div class="section-card-header"><div><h2>Stripe Integration</h2><p>How revenue data maps to Stripe API fields</p></div></div>
+          <div class="section-card-body">
+            <div class="azure-note">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div>
+                <strong>Subscription fields:</strong> <code>subscription.status</code> (trialing · active · past_due · canceled · paused), <code>subscription.current_period_end</code> (next billing), <code>subscription.canceled_at</code>, <code>subscription.items.data[0].price.nickname</code> (plan name), <code>subscription.items.data[0].price.unit_amount</code> (price in cents → MRR).<br /><br />
+                <strong>Customer fields:</strong> <code>customer.name</code>, <code>customer.email</code>, <code>customer.created</code>, <code>customer.metadata.company</code>.<br /><br />
+                <strong>Azure-stored fields:</strong> <code>xero_connected</code>, <code>token_usage</code>, <code>token_limit</code>, <code>last_login</code>. Enter your Stripe secret key and Azure endpoint in <strong>Settings</strong> to go live.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /panel-genlxi-revenue -->
+
+
+      <!-- ======================================================
+           PANEL: SETTINGS
+      ====================================================== -->
+      <div class="admin-panel" id="panel-settings">
+
+        <!-- Supabase -->
+        <div class="section-card" style="margin-bottom:20px;">
+          <div class="section-card-header"><div><h2>Supabase — Blog</h2><p>Blog posts storage. Anon/publishable key is safe to use here.</p></div></div>
+          <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group"><label>Project URL</label><input type="text" id="cfg-sb-url" placeholder="https://xxxx.supabase.co" /></div>
+            <div class="form-group"><label>Anon Key</label><input type="password" id="cfg-sb-key" placeholder="sb_publishable_…" /></div>
+            <button class="btn-save" style="max-width:180px;" onclick="saveSupabaseSettings()">Save & reconnect</button>
+          </div>
+        </div>
+
+        <!-- Stripe -->
+        <div class="section-card" style="margin-bottom:20px;">
+          <div class="section-card-header"><div><h2>Stripe — Gen LXI</h2><p>Billing source for Gen LXI subscriptions. Connect when product launches.</p></div></div>
+          <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group"><label>Stripe Secret Key</label><input type="password" id="cfg-stripe-key" placeholder="sk_live_••••••••" /></div>
+            <div class="form-group"><label>Stripe Webhook Secret</label><input type="password" id="cfg-stripe-webhook" placeholder="whsec_••••••••" /></div>
+            <button class="btn-save" style="max-width:180px;" onclick="saveStripeSettings()">Save</button>
+          </div>
+        </div>
+
+        <!-- Azure -->
+        <div class="section-card" style="margin-bottom:20px;">
+          <div class="section-card-header"><div><h2>Azure — Gen LXI</h2><p>Function App for AI processing, token usage, and Xero connection state.</p></div></div>
+          <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group"><label>Function Endpoint</label><input type="text" id="cfg-azure-url" placeholder="https://lxi-fn.azurewebsites.net/api/users" /></div>
+            <div class="form-group"><label>Function Key</label><input type="password" id="cfg-azure-key" placeholder="Azure host key" /></div>
+            <button class="btn-save" style="max-width:180px;" onclick="saveAzureSettings()">Save</button>
+          </div>
+        </div>
+
+        <!-- Supabase DB setup -->
+        <div class="section-card" style="margin-bottom:20px;">
+          <div class="section-card-header"><div><h2>Blog Database Setup</h2><p>Run this SQL once in Supabase → SQL Editor to create the blog_posts table.</p></div></div>
+          <div class="section-card-body">
+            <pre class="sql-block">CREATE TABLE IF NOT EXISTS blog_posts (
+  id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+  title       text        NOT NULL,
+  content     text        NOT NULL DEFAULT '',
+  cover_image text,
+  author      text,
+  publish_date date,
+  tags        text,
+  published   boolean     DEFAULT false,
+  created_at  timestamptz DEFAULT now(),
+  updated_at  timestamptz DEFAULT now()
+);
+ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Public read published" ON blog_posts FOR SELECT USING (published = true);
+CREATE POLICY "Anon full access" ON blog_posts FOR ALL USING (true) WITH CHECK (true);</pre>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="section-card">
+          <div class="section-card-header"><div><h2>Admin Password</h2><p>Default: <code style="opacity:0.6;">logixinity2026</code></p></div></div>
+          <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group"><label>New Password</label><input type="password" id="cfg-new-pass" placeholder="Enter new password" /></div>
+            <div class="form-group"><label>Confirm Password</label><input type="password" id="cfg-confirm-pass" placeholder="Repeat new password" /></div>
+            <div class="save-status" id="passStatus"></div>
+            <button class="btn-save" style="max-width:200px;" onclick="changePassword()">Update password</button>
+          </div>
+        </div>
+
+      </div><!-- /panel-settings -->
+
+
+    </div><!-- /admin-content -->
+  </main>
+</div><!-- /admin-wrap -->
+
+
+<!-- Delete modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <h3>Delete post?</h3>
+    <p id="deleteModalText">This cannot be undone.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-danger" onclick="doDelete()">Yes, delete</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ============================================================
+   CONFIG
+============================================================ */
+const DEFAULT_PASSWORD = 'logixinity2026';
+const DEFAULT_SB_URL   = 'https://zgfbtdsxisyidcrsahky.supabase.co';
+const DEFAULT_SB_KEY   = 'sb_publishable_jjk1YcqcRYxw1mhUiMdRKw_DPYjkWyI';
+
+let sbClient  = null;
+let allPosts  = [];
+let editingId = null;
+
+/* ============================================================
+   AUTH
+============================================================ */
+function getPassword() { return sessionStorage.getItem('admin_pass') || DEFAULT_PASSWORD; }
+
+function handleLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === getPassword()) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminWrap').classList.add('visible');
+    initSupabase();
+    renderGenLXI();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+document.getElementById('adminPass').addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+
+function handleLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminWrap').classList.remove('visible');
+  document.getElementById('adminPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+const PANEL_META = {
+  'blog-posts':       ['Blog Posts',      true],
+  'blog-editor':      ['Post Editor',     false],
+  'genlxi-dashboard': ['Gen LXI · Dashboard', false],
+  'genlxi-users':     ['Gen LXI · All Users', false],
+  'genlxi-revenue':   ['Gen LXI · Revenue & Plans', false],
+  'settings':         ['Settings',        false],
+};
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const [title, showNewPost] = PANEL_META[id] || [id, false];
+  document.getElementById('topbarTitle').textContent = title;
+  document.getElementById('topbarNewPost').style.display = showNewPost ? 'block' : 'none';
+  if (id === 'blog-posts') fetchPosts();
+  if (id === 'settings') loadSettings();
+}
+
+/* ============================================================
+   SUPABASE
+============================================================ */
+function initSupabase(cb) {
+  const url = sessionStorage.getItem('sb_url') || DEFAULT_SB_URL;
+  const key = sessionStorage.getItem('sb_key') || DEFAULT_SB_KEY;
+
+  const onReady = () => {
+    sbClient = window.supabase.createClient(url, key);
+    document.getElementById('sbNotice').style.display = 'none';
+    if (cb) cb(); else fetchPosts();
+  };
+
+  if (window._sbLoaded) { onReady(); return; }
+
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  script.onload = () => { window._sbLoaded = true; onReady(); };
+  script.onerror = () => { document.getElementById('sbNotice').style.display = 'flex'; };
+  document.head.appendChild(script);
+}
+
+/* ============================================================
+   BLOG — FETCH & RENDER
+============================================================ */
+async function fetchPosts() {
+  if (!sbClient) { renderPostsTable([]); return; }
+  document.getElementById('postsCount').textContent = 'Loading…';
+  const { data, error } = await sbClient.from('blog_posts').select('*').order('created_at', { ascending: false });
+  allPosts = (!error && data) ? data : [];
+  if (error) document.getElementById('postsCount').textContent = 'Error: ' + error.message;
+  renderPostsTable(allPosts);
+}
+
+let currentFilter = 'all';
+function filterPosts(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderPostsTable(allPosts);
+}
+
+function renderPostsTable(posts) {
+  const filtered = posts.filter(p => {
+    if (currentFilter === 'published') return p.published;
+    if (currentFilter === 'draft')     return !p.published;
+    return true;
+  });
+  const pub = posts.filter(p => p.published).length;
+  document.getElementById('postsCount').textContent =
+    `${posts.length} post${posts.length !== 1 ? 's' : ''} · ${pub} published · ${posts.length - pub} draft`;
+
+  const tbody = document.getElementById('postsTableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">
+      <p>${posts.length === 0 ? 'No posts yet. Click "+ New post" to write your first one.' : 'No posts match this filter.'}</p>
+      ${posts.length === 0 ? '<button class="btn-save" style="max-width:160px;margin:0 auto;" onclick="openNewPost()">+ New post</button>' : ''}
+    </div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = filtered.map(p => {
+    const tags = parseTags(p.tags).map(t => `<span class="tag-pill">${esc(t)}</span>`).join('');
+    const status = p.published
+      ? `<span class="badge published"><span class="badge-dot"></span>Published</span>`
+      : `<span class="badge draft"><span class="badge-dot"></span>Draft</span>`;
+    return `<tr data-status="${p.published ? 'published' : 'draft'}" data-search="${esc((p.title+' '+(p.author||'')).toLowerCase())}">
+      <td><strong>${esc(p.title)}</strong></td>
+      <td>${esc(p.author || '—')}</td>
+      <td>${tags || '<span style="color:var(--muted);font-size:12px;">—</span>'}</td>
+      <td>${status}</td>
+      <td>${p.publish_date ? fmtDate(p.publish_date) : '—'}</td>
+      <td><div class="row-actions">
+        <button class="row-btn edit" onclick="openEditor('${p.id}')">Edit</button>
+        <button class="row-btn del"  onclick="confirmDeleteById('${p.id}',\`${esc(p.title).replace(/`/g,'\\`')}\`)">Delete</button>
+      </div></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   BLOG — EDITOR
+============================================================ */
+function openNewPost() {
+  editingId = null;
+  ['fTitle','fContent','fCover'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fAuthor').value = 'Logixinity';
+  document.getElementById('fDate').value   = new Date().toISOString().split('T')[0];
+  document.getElementById('fTags').value   = '';
+  document.getElementById('fPublished').checked = false;
+  document.getElementById('editorTitle').textContent = 'New Post';
+  document.getElementById('btnDelete').style.display = 'none';
+  updatePublishLabel(); updateCoverPreview(); clearSaveStatus();
+  showPanel('blog-editor', null);
+}
+
+function openEditor(id) {
+  const post = allPosts.find(p => p.id === id);
+  if (!post) return;
+  editingId = id;
+  document.getElementById('fTitle').value     = post.title      || '';
+  document.getElementById('fContent').value   = post.content    || '';
+  document.getElementById('fAuthor').value    = post.author     || '';
+  document.getElementById('fDate').value      = post.publish_date || '';
+  document.getElementById('fTags').value      = post.tags       || '';
+  document.getElementById('fCover').value     = post.cover_image || '';
+  document.getElementById('fPublished').checked = !!post.published;
+  document.getElementById('editorTitle').textContent = 'Edit Post';
+  document.getElementById('btnDelete').style.display = 'block';
+  updatePublishLabel(); updateCoverPreview(); clearSaveStatus();
+  showPanel('blog-editor', null);
+}
+
+function cancelEdit() { showPanel('blog-posts', document.querySelector('.sidebar-link')); }
+
+function updatePublishLabel() {
+  document.getElementById('publishToggleLabel').textContent =
+    document.getElementById('fPublished').checked ? 'Published' : 'Draft';
+}
+document.getElementById('fPublished').addEventListener('change', updatePublishLabel);
+
+function updateCoverPreview() {
+  const url = document.getElementById('fCover').value.trim();
+  const el  = document.getElementById('coverPreview');
+  el.innerHTML = url
+    ? `<img src="${esc(url)}" alt="Cover" onerror="this.parentElement.innerHTML='<span>Image not found</span>'" />`
+    : '<span>No image set</span>';
+}
+
+async function savePost() {
+  const title   = document.getElementById('fTitle').value.trim();
+  const content = document.getElementById('fContent').value.trim();
+  if (!title)   { showSaveStatus('error', 'Title is required.');   return; }
+  if (!content) { showSaveStatus('error', 'Content is required.'); return; }
+
+  const payload = {
+    title, content,
+    author:       document.getElementById('fAuthor').value.trim() || null,
+    publish_date: document.getElementById('fDate').value || null,
+    tags:         document.getElementById('fTags').value.trim() || null,
+    cover_image:  document.getElementById('fCover').value.trim() || null,
+    published:    document.getElementById('fPublished').checked,
+    updated_at:   new Date().toISOString(),
+  };
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true; btn.textContent = 'Saving…';
+
+  if (!sbClient) {
+    // Local fallback
+    if (editingId) { const i = allPosts.findIndex(p => p.id === editingId); if (i > -1) allPosts[i] = { ...allPosts[i], ...payload }; }
+    else { const n = { id: 'local_' + Date.now(), created_at: new Date().toISOString(), ...payload }; allPosts.unshift(n); editingId = n.id; }
+    btn.disabled = false; btn.textContent = 'Save post';
+    document.getElementById('btnDelete').style.display = 'block';
+    document.getElementById('editorTitle').textContent = 'Edit Post';
+    showSaveStatus('success', 'Saved locally (Supabase not connected).');
+    return;
+  }
+
+  let error;
+  if (editingId && !editingId.startsWith('local_')) {
+    const r = await sbClient.from('blog_posts').update(payload).eq('id', editingId);
+    error = r.error;
+  } else {
+    payload.created_at = new Date().toISOString();
+    const r = await sbClient.from('blog_posts').insert(payload).select().single();
+    error = r.error;
+    if (!error && r.data) {
+      editingId = r.data.id;
+      allPosts.unshift(r.data);
+      document.getElementById('btnDelete').style.display = 'block';
+      document.getElementById('editorTitle').textContent = 'Edit Post';
+    }
+  }
+
+  btn.disabled = false; btn.textContent = 'Save post';
+  if (error) { showSaveStatus('error', 'Save failed: ' + error.message); }
+  else       { showSaveStatus('success', 'Post saved successfully.'); await fetchPosts(); }
+}
+
+function showSaveStatus(type, msg) {
+  const el = document.getElementById('saveStatus');
+  el.className = 'save-status ' + type;
+  el.textContent = msg;
+  if (type === 'success') setTimeout(() => { el.className = 'save-status'; }, 4000);
+}
+function clearSaveStatus() { const el = document.getElementById('saveStatus'); el.className = 'save-status'; el.textContent = ''; }
+
+/* ============================================================
+   BLOG — DELETE
+============================================================ */
+let deleteTargetId = null;
+function confirmDelete() { if (editingId) { const p = allPosts.find(p => p.id === editingId); confirmDeleteById(editingId, p ? p.title : 'this post'); } }
+function confirmDeleteById(id, title) {
+  deleteTargetId = id;
+  document.getElementById('deleteModalText').textContent = `"${title}" will be permanently deleted.`;
+  document.getElementById('deleteModal').classList.add('open');
+}
+function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('open'); deleteTargetId = null; }
+async function doDelete() {
+  if (!deleteTargetId) return;
+  closeDeleteModal();
+  if (sbClient && !deleteTargetId.startsWith('local_')) {
+    const { error } = await sbClient.from('blog_posts').delete().eq('id', deleteTargetId);
+    if (error) { alert('Delete failed: ' + error.message); return; }
+  }
+  allPosts = allPosts.filter(p => p.id !== deleteTargetId);
+  if (editingId === deleteTargetId) { editingId = null; cancelEdit(); }
+  renderPostsTable(allPosts);
+}
+
+/* ============================================================
+   GEN LXI — MOCK DATA
+============================================================ */
+const MOCK_USERS = [
+  { stripe_id:'cus_001', stripe_name:'Sarah Mitchell',  stripe_email:'sarah@clearledger.com.au',  stripe_company:'Clear Ledger Accounting',    stripe_created:'2026-01-14', stripe_status:'active',         stripe_plan:'Advanced', stripe_trial_end:null,         stripe_current_period_end:'2026-06-18', stripe_canceled_at:null, stripe_cancel_reason:null, stripe_cancel_at_period_end:false, stripe_mrr:150, xero_connected:true,  token_usage:18400, token_limit:30000,  last_login:'2026-05-17' },
+  { stripe_id:'cus_002', stripe_name:'James Nguyen',    stripe_email:'james@nguyenwealth.com',     stripe_company:'Nguyen Wealth Advisory',     stripe_created:'2025-12-20', stripe_status:'active',         stripe_plan:'Pro',      stripe_trial_end:null,         stripe_current_period_end:'2026-06-03', stripe_canceled_at:null, stripe_cancel_reason:null, stripe_cancel_at_period_end:false, stripe_mrr:200, xero_connected:true,  token_usage:48200, token_limit:100000, last_login:'2026-05-18' },
+  { stripe_id:'cus_003', stripe_name:'Priya Sharma',    stripe_email:'priya@brightbooks.net',      stripe_company:'Bright Books Pty Ltd',       stripe_created:'2026-05-02', stripe_status:'trialing',       stripe_plan:'Essential',stripe_trial_end:'2026-06-01', stripe_current_period_end:null,         stripe_canceled_at:null, stripe_cancel_reason:null, stripe_cancel_at_period_end:false, stripe_mrr:0,   xero_connected:true,  token_usage:3100,  token_limit:10000,  last_login:'2026-05-16' },
+  { stripe_id:'cus_004', stripe_name:'Tom Elliot',      stripe_email:'tom@elliotaccountants.com.au',stripe_company:'Elliot & Associates',       stripe_created:'2026-04-29', stripe_status:'trialing',       stripe_plan:'Advanced', stripe_trial_end:'2026-05-29', stripe_current_period_end:null,         stripe_canceled_at:null, stripe_cancel_reason:null, stripe_cancel_at_period_end:false, stripe_mrr:0,   xero_connected:false, token_usage:620,   token_limit:30000,  last_login:'2026-05-10' },
+  { stripe_id:'cus_005', stripe_name:'Linda Park',      stripe_email:'l.park@parkfinancial.com.au',stripe_company:'Park Financial Group',       stripe_created:'2026-02-08', stripe_status:'active',         stripe_plan:'Essential',stripe_trial_end:null,         stripe_current_period_end:'2026-06-10', stripe_canceled_at:null, stripe_cancel_reason:null, stripe_cancel_at_period_end:false, stripe_mrr:100, xero_connected:true,  token_usage:7800,  token_limit:10000,  last_login:'2026-05-14' },
+  { stripe_id:'cus_006', stripe_name:'Marcus Chen',     stripe_email:'marcus@alphatax.com.au',     stripe_company:'Alpha Tax Solutions',        stripe_created:'2025-11-03', stripe_status:'canceled',       stripe_plan:'Advanced', stripe_trial_end:null,         stripe_current_period_end:null,         stripe_canceled_at:'2026-04-15', stripe_cancel_reason:'payment_failed', stripe_cancel_at_period_end:false, stripe_mrr:0, xero_connected:false, token_usage:0, token_limit:30000, last_login:'2026-04-10' },
+  { stripe_id:'cus_007', stripe_name:'Anika Patel',     stripe_email:'anika@patelbiz.com',         stripe_company:'Patel Business Services',    stripe_created:'2026-05-06', stripe_status:'trialing',       stripe_plan:'Pro',      stripe_trial_end:'2026-06-05', stripe_current_period_end:null,         stripe_canceled_at:null, stripe_cancel_reason:null, stripe_cancel_at_period_end:false, stripe_mrr:0,   xero_connected:true,  token_usage:9800,  token_limit:100000, last_login:'2026-05-18' },
+  { stripe_id:'cus_008', stripe_name:'Dylan Roberts',   stripe_email:'dylan@finedge.com.au',       stripe_company:'FinEdge Advisory',           stripe_created:'2026-01-20', stripe_status:'cancel_pending', stripe_plan:'Essential',stripe_trial_end:null,         stripe_current_period_end:'2026-05-31', stripe_canceled_at:null, stripe_cancel_reason:'cancellation_requested', stripe_cancel_at_period_end:true, stripe_mrr:100, xero_connected:true, token_usage:4200, token_limit:10000, last_login:'2026-05-05' },
+];
+
+function renderGenLXI() {
+  renderGLXIMetrics();
+  renderRecentTable();
+  renderPlanBreakdown('pb-essential','pb-advanced','pb-pro','pb-essential-rev','pb-advanced-rev','pb-pro-rev');
+  renderUsersTable();
+  renderRevenue();
+}
+
+function renderGLXIMetrics() {
+  const active    = MOCK_USERS.filter(u => u.stripe_status === 'active' || u.stripe_status === 'cancel_pending').length;
+  const trial     = MOCK_USERS.filter(u => u.stripe_status === 'trialing').length;
+  const cancelled = MOCK_USERS.filter(u => u.stripe_status === 'canceled').length;
+  const mrr       = MOCK_USERS.reduce((s,u) => s + u.stripe_mrr, 0);
+  const xero      = MOCK_USERS.filter(u => (u.stripe_status==='active'||u.stripe_status==='cancel_pending') && u.xero_connected).length;
+  document.getElementById('m-total').textContent     = MOCK_USERS.length;
+  document.getElementById('m-active').textContent    = active;
+  document.getElementById('m-trial').textContent     = trial;
+  document.getElementById('m-cancelled').textContent = cancelled;
+  document.getElementById('m-mrr').textContent       = '$' + mrr.toLocaleString();
+  document.getElementById('m-xero').textContent      = active ? xero + '/' + active : '—';
+}
+
+function renderRecentTable() {
+  const sorted = [...MOCK_USERS].sort((a,b) => new Date(b.stripe_created) - new Date(a.stripe_created)).slice(0,5);
+  document.getElementById('recentTableBody').innerHTML = sorted.map(u => `
+    <tr><td><strong>${u.stripe_name}</strong></td><td>${u.stripe_company}</td>
+    <td>${planBadge(u.stripe_plan)}</td><td>${statusBadge(u.stripe_status)}</td>
+    <td>${xeroBadge(u.xero_connected)}</td><td>${fmtDate(u.stripe_created)}</td></tr>`).join('');
+}
+
+function renderPlanBreakdown(eid,aid,pid,erev,arev,prev) {
+  const paying = MOCK_USERS.filter(u => u.stripe_status==='active'||u.stripe_status==='cancel_pending');
+  const ec = paying.filter(u => u.stripe_plan==='Essential').length;
+  const ac = paying.filter(u => u.stripe_plan==='Advanced').length;
+  const pc = paying.filter(u => u.stripe_plan==='Pro').length;
+  document.getElementById(eid).textContent  = ec;
+  document.getElementById(aid).textContent  = ac;
+  document.getElementById(pid).textContent  = pc;
+  document.getElementById(erev).textContent = '$' + (ec*100).toLocaleString() + '/mo';
+  document.getElementById(arev).textContent = '$' + (ac*150).toLocaleString() + '/mo';
+  document.getElementById(prev).textContent = '$' + (pc*200).toLocaleString() + '/mo';
+}
+
+function renderUsersTable() {
+  document.getElementById('usersTableBody').innerHTML = MOCK_USERS.map(u => `
+    <tr data-status="${u.stripe_status}" data-plan="${u.stripe_plan}"
+        data-search="${(u.stripe_name+' '+u.stripe_email+' '+u.stripe_company).toLowerCase()}">
+      <td><strong>${u.stripe_name}</strong></td>
+      <td>${u.stripe_company}</td>
+      <td style="color:var(--muted);font-size:12px;">${u.stripe_email}</td>
+      <td>${planBadge(u.stripe_plan)}</td>
+      <td>${statusBadge(u.stripe_status)}</td>
+      <td>${xeroBadge(u.xero_connected)}</td>
+      <td style="min-width:120px;">${tokenBar(u.token_usage, u.token_limit)}</td>
+      <td>${u.stripe_current_period_end ? fmtDate(u.stripe_current_period_end) : '—'}</td>
+      <td>${fmtDate(u.stripe_created)}</td>
+    </tr>`).join('');
+}
+
+function renderRevenue() {
+  const paying = MOCK_USERS.filter(u => u.stripe_status==='active'||u.stripe_status==='cancel_pending');
+  const mrr  = MOCK_USERS.reduce((s,u) => s + u.stripe_mrr, 0);
+  const arpu = paying.length ? Math.round(mrr/paying.length) : 0;
+  const conv = MOCK_USERS.length ? Math.round((paying.length/MOCK_USERS.length)*100)+'%' : '—';
+  document.getElementById('rev-mrr').textContent  = '$' + mrr.toLocaleString();
+  document.getElementById('rev-arr').textContent  = '$' + (mrr*12).toLocaleString();
+  document.getElementById('rev-arpu').textContent = '$' + arpu;
+  document.getElementById('rev-conv').textContent = conv;
+  renderPlanBreakdown('rev-pb-essential','rev-pb-advanced','rev-pb-pro','rev-pb-essential-rev','rev-pb-advanced-rev','rev-pb-pro-rev');
+}
+
+/* ============================================================
+   GEN LXI — HELPERS
+============================================================ */
+function statusBadge(s) {
+  const map = { active:'active', trialing:'trial', canceled:'cancelled', cancel_pending:'cancelled', past_due:'trial', paused:'trial', unpaid:'cancelled' };
+  const lbl = { active:'Active', trialing:'In Trial', canceled:'Cancelled', cancel_pending:'Cancelling', past_due:'Past Due', paused:'Paused', unpaid:'Unpaid' };
+  return `<span class="badge ${map[s]||''}"><span class="badge-dot"></span>${lbl[s]||s}</span>`;
+}
+function planBadge(p) {
+  const m = { Essential:'plan-e', Advanced:'plan-a', Pro:'plan-p' };
+  return `<span class="badge ${m[p]||''}">${p}</span>`;
+}
+function xeroBadge(c) {
+  return c ? `<span class="badge connected">Connected</span>` : `<span class="badge not-connected">Not linked</span>`;
+}
+function tokenBar(usage, limit) {
+  const pct = limit ? Math.min(100, Math.round((usage/limit)*100)) : 0;
+  const cls = pct > 85 ? 'high' : pct > 60 ? 'warn' : '';
+  return `<div class="token-bar-wrap"><div class="token-bar-bg"><div class="token-bar-fill ${cls}" style="width:${pct}%"></div></div><span class="token-bar-label">${pct}%</span></div>`;
+}
+
+/* ============================================================
+   SEARCH & FILTER (Gen LXI tables)
+============================================================ */
+function filterTable(q, tbodyId) {
+  q = q.toLowerCase();
+  document.querySelectorAll(`#${tbodyId} tr`).forEach(r => { r.style.display = (r.dataset.search||'').includes(q) ? '' : 'none'; });
+}
+function filterByStatus(s, tbodyId) {
+  document.querySelectorAll(`#${tbodyId} tr`).forEach(r => { r.style.display = (!s || r.dataset.status===s) ? '' : 'none'; });
+}
+function filterByPlan(p, tbodyId) {
+  document.querySelectorAll(`#${tbodyId} tr`).forEach(r => { r.style.display = (!p || r.dataset.plan===p) ? '' : 'none'; });
+}
+
+/* ============================================================
+   SETTINGS
+============================================================ */
+function loadSettings() {
+  document.getElementById('cfg-sb-url').value       = sessionStorage.getItem('sb_url')           || DEFAULT_SB_URL;
+  document.getElementById('cfg-sb-key').value       = sessionStorage.getItem('sb_key')           || DEFAULT_SB_KEY;
+  document.getElementById('cfg-stripe-key').value   = sessionStorage.getItem('cfg_stripe_key')   || '';
+  document.getElementById('cfg-stripe-webhook').value = sessionStorage.getItem('cfg_stripe_webhook') || '';
+  document.getElementById('cfg-azure-url').value    = sessionStorage.getItem('cfg_azure_url')    || '';
+  document.getElementById('cfg-azure-key').value    = sessionStorage.getItem('cfg_azure_key')    || '';
+}
+
+function saveSupabaseSettings() {
+  const url = document.getElementById('cfg-sb-url').value.trim();
+  const key = document.getElementById('cfg-sb-key').value.trim();
+  if (url) sessionStorage.setItem('sb_url', url);
+  if (key) sessionStorage.setItem('sb_key', key);
+  sbClient = null;
+  initSupabase(() => { alert('Supabase connected.'); fetchPosts(); });
+}
+
+function saveStripeSettings() {
+  sessionStorage.setItem('cfg_stripe_key',     document.getElementById('cfg-stripe-key').value);
+  sessionStorage.setItem('cfg_stripe_webhook', document.getElementById('cfg-stripe-webhook').value);
+  alert('Stripe settings saved. Connect your backend to use live data.');
+}
+
+function saveAzureSettings() {
+  sessionStorage.setItem('cfg_azure_url', document.getElementById('cfg-azure-url').value);
+  sessionStorage.setItem('cfg_azure_key', document.getElementById('cfg-azure-key').value);
+  alert('Azure settings saved.');
+}
+
+function changePassword() {
+  const np = document.getElementById('cfg-new-pass').value;
+  const cp = document.getElementById('cfg-confirm-pass').value;
+  const st = document.getElementById('passStatus');
+  if (!np) { st.className='save-status error'; st.textContent='Enter a new password.'; return; }
+  if (np !== cp) { st.className='save-status error'; st.textContent='Passwords do not match.'; return; }
+  sessionStorage.setItem('admin_pass', np);
+  document.getElementById('cfg-new-pass').value = '';
+  document.getElementById('cfg-confirm-pass').value = '';
+  st.className = 'save-status success';
+  st.textContent = 'Password updated. Takes effect on next login.';
+  setTimeout(() => { st.className = 'save-status'; }, 4000);
+}
+
+/* ============================================================
+   HELPERS
+============================================================ */
+function esc(str) {
+  return String(str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function parseTags(s) { return s ? s.split(',').map(t=>t.trim()).filter(Boolean) : []; }
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d + (d.length === 10 ? 'T00:00:00' : '')).toLocaleDateString('en-AU', { day:'2-digit', month:'short', year:'numeric' });
+}
+</script>
+</body>
+</html>
