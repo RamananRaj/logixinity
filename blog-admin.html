@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/admin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     /* ── Blog Admin Extensions ── */
 
@@ -794,7 +795,8 @@ function handleLogin() {
   if (pass === getPassword()) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminWrap').classList.add('visible');
-    initSupabase(); // initSupabase calls fetchPosts() once ready
+    initSupabase();
+    fetchPosts();
   } else {
     document.getElementById('loginError').style.display = 'block';
   }
@@ -819,10 +821,11 @@ function initSupabase(cb) {
   const url = sessionStorage.getItem('sb_url') || DEFAULT_SB_URL;
   const key = sessionStorage.getItem('sb_key') || DEFAULT_SB_KEY;
 
-  const onReady = () => {
+  try {
     supabase = window.supabase.createClient(url, key);
     document.getElementById('sbNotice').style.display = 'none';
-    // Quick connection test
+
+    // Quick connection test — update header with live status
     supabase.from('blog_posts').select('count', { count: 'exact', head: true }).then(({ error }) => {
       const meta = document.getElementById('topbarMeta');
       if (error) {
@@ -832,19 +835,13 @@ function initSupabase(cb) {
         meta.innerHTML = 'Logixinity blog · <span style="color:#34d399;">● Connected to Supabase</span>';
       }
     });
-    if (cb) cb(); else fetchPosts();
-  };
 
-  if (window._sbLoaded) {
-    onReady();
-    return;
+    if (cb) cb();
+  } catch(e) {
+    console.error('Supabase createClient failed:', e);
+    document.getElementById('sbNotice').style.display = 'flex';
+    alert('❌ Could not initialise Supabase:\n\n' + e.message);
   }
-
-  const script = document.createElement('script');
-  script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-  script.onload = () => { window._sbLoaded = true; onReady(); };
-  script.onerror = () => { document.getElementById('sbNotice').style.display = 'flex'; };
-  document.head.appendChild(script);
 }
 
 /* ============================================================
@@ -1179,10 +1176,9 @@ function saveSettings() {
   if (url) sessionStorage.setItem('sb_url', url);
   if (key) sessionStorage.setItem('sb_key', key);
   supabase = null;
-  initSupabase(() => {
-    alert('Settings saved. Supabase connected.');
-    fetchPosts();
-  });
+  initSupabase();
+  fetchPosts();
+  alert('Settings saved. Supabase reconnected.');
 }
 
 function changePassword() {
