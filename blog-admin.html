@@ -407,6 +407,16 @@
       border-color: rgba(45,212,170,0.3);
       color: var(--teal-400);
     }
+
+    /* Meta row responsive */
+    .meta-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 640px) {
+      .meta-row { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -553,6 +563,21 @@
                   <input type="text" id="fTitle" placeholder="e.g. How AI is changing Australian accounting" />
                 </div>
 
+                <div class="meta-row">
+                  <div class="form-group">
+                    <label for="fAuthor">Author</label>
+                    <input type="text" id="fAuthor" placeholder="e.g. Logixinity" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fDate">Publish Date</label>
+                    <input type="date" id="fDate" />
+                  </div>
+                  <div class="form-group">
+                    <label for="fTags">Tags <span style="font-weight:400;text-transform:none;letter-spacing:0;">(comma-separated)</span></label>
+                    <input type="text" id="fTags" placeholder="e.g. Propiq, Property" />
+                  </div>
+                </div>
+
                 <div class="form-group">
                   <label for="fContent">Content *</label>
                   <textarea class="content-area" id="fContent" placeholder="Write your post content here. You can use HTML tags for formatting:&#10;&#10;<h2>Section heading</h2>&#10;<p>Paragraph text here.</p>&#10;<strong>Bold text</strong>, <em>italic text</em>&#10;<ul><li>Bullet point</li></ul>&#10;<a href=&quot;https://...&quot;>Link text</a>"></textarea>
@@ -596,32 +621,6 @@
 
                 <button class="btn-danger" id="btnDelete" onclick="confirmDelete()" style="display:none;">Delete post</button>
                 <button class="btn-secondary" onclick="cancelEdit()">← Back to posts</button>
-
-              </div>
-            </div>
-
-            <!-- Meta fields -->
-            <div class="section-card">
-              <div class="section-card-header" style="padding-bottom:12px;">
-                <div><h2>Details</h2></div>
-              </div>
-              <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
-
-                <div class="form-group">
-                  <label for="fAuthor">Author</label>
-                  <input type="text" id="fAuthor" placeholder="e.g. Ram Raj" />
-                </div>
-
-                <div class="form-group">
-                  <label for="fDate">Publish Date</label>
-                  <input type="date" id="fDate" />
-                </div>
-
-                <div class="form-group">
-                  <label for="fTags">Tags</label>
-                  <input type="text" id="fTags" placeholder="e.g. Accounting, AI, Xero" />
-                  <span class="tags-hint">Comma-separated</span>
-                </div>
 
               </div>
             </div>
@@ -937,9 +936,10 @@ function openNewPost() {
   document.getElementById('editorTitle').textContent = 'New Post';
   document.getElementById('btnDelete').style.display = 'none';
 
-  // Set default author and today's date
+  // Pre-fill author, today's date, and a blank tags prompt
   document.getElementById('fAuthor').value = 'Logixinity';
   document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('fTags').value = '';
 
   showPanel('editor', null);
 }
