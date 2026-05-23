@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Logixinity Blog — Insights on AI-powered accounting, property investment, and financial intelligence for Australian businesses." />
+  <meta name="robots" content="index, follow" />
+  <meta property="og:title" content="Logixinity Blog" />
+  <meta property="og:description" content="Insights on AI-powered accounting, property investment, and financial intelligence." />
+  <meta property="og:type" content="website" />
+  <title>Blog — Logixinity</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Blog Page Styles ── */
+
+    .blog-page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Blog List View ── */
+    .blog-hero {
+      background: linear-gradient(160deg, #EBF4FB 0%, #F8FAFC 55%, #ffffff 100%);
+      padding: 72px 0 64px;
+    }
+    .blog-hero h1 {
+      font-size: clamp(32px, 5vw, 48px);
+      font-weight: 800;
+      color: var(--navy-900);
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 14px;
+    }
+    .blog-hero h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+    .blog-hero p {
+      font-size: 17px;
+      color: var(--text-secondary);
+      max-width: 480px;
+      line-height: 1.65;
+    }
+
+    /* Tag filter bar */
+    .blog-filter {
+      padding: 20px 0 0;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .blog-filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-right: 4px;
+    }
+    .filter-tag {
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-tag:hover, .filter-tag.active {
+      background: var(--accent-light);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Posts grid */
+    .blog-posts {
+      flex: 1;
+      padding: 56px 0 96px;
+    }
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    @media (max-width: 900px) {
+      .posts-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 580px) {
+      .posts-grid { grid-template-columns: 1fr; }
+    }
+
+    .post-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+    }
+    .post-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-2px);
+    }
+    .post-card-cover {
+      height: 200px;
+      background: var(--accent-light);
+      overflow: hidden;
+      position: relative;
+    }
+    .post-card-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+    .post-card:hover .post-card-cover img {
+      transform: scale(1.03);
+    }
+    .post-card-cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--accent-light) 0%, #dbeeff 100%);
+    }
+    .post-card-cover-placeholder svg {
+      color: var(--accent);
+      opacity: 0.4;
+    }
+
+    .post-card-body {
+      padding: 22px 22px 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .post-tag {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .post-date {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .post-card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy-900);
+      line-height: 1.35;
+      margin-bottom: 10px;
+      letter-spacing: -0.01em;
+    }
+    .post-card-excerpt {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .post-card-footer {
+      padding: 14px 22px 18px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .post-author {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .post-read-more {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* Empty / loading states */
+    .blog-empty {
+      text-align: center;
+      padding: 80px 24px;
+      grid-column: 1 / -1;
+    }
+    .blog-empty h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--navy-900);
+      margin-bottom: 10px;
+    }
+    .blog-empty p {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+    .blog-loading {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    /* ── Single Post View ── */
+    .post-view {
+      display: none;
+      flex: 1;
+      padding: 0 0 96px;
+    }
+    .post-view.active { display: block; }
+    .post-list-wrap { flex: 1; }
+    .post-list-wrap.hidden { display: none; }
+
+    .post-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      padding: 28px 0 0;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .post-back:hover { opacity: 0.75; }
+
+    .post-full-cover {
+      width: 100%;
+      max-height: 420px;
+      overflow: hidden;
+      border-radius: 16px;
+      margin: 24px 0;
+    }
+    .post-full-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      max-height: 420px;
+    }
+
+    .post-full-header {
+      margin-bottom: 32px;
+    }
+    .post-full-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .post-full-title {
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 800;
+      color: var(--navy-900);
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 18px;
+    }
+    .post-full-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .post-full-author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .post-full-author-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .post-full-author-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--navy-900);
+    }
+    .post-full-date {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .post-full-divider {
+      width: 40px;
+      height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin: 28px 0;
+      opacity: 0.4;
+    }
+
+    /* Post content typography */
+    .post-content {
+      max-width: 720px;
+      font-size: 17px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+    .post-content h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--navy-900);
+      letter-spacing: -0.02em;
+      margin: 36px 0 14px;
+    }
+    .post-content h3 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--navy-900);
+      margin: 28px 0 10px;
+    }
+    .post-content p {
+      margin-bottom: 20px;
+    }
+    .post-content strong { color: var(--navy-900); font-weight: 700; }
+    .post-content em { font-style: italic; }
+    .post-content a { color: var(--accent); text-decoration: underline; }
+    .post-content a:hover { color: var(--accent-hover); }
+    .post-content ul, .post-content ol {
+      margin: 0 0 20px 24px;
+    }
+    .post-content li { margin-bottom: 6px; }
+    .post-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 8px 0 8px 20px;
+      margin: 24px 0;
+      color: var(--text-muted);
+      font-style: italic;
+    }
+    .post-content img {
+      max-width: 100%;
+      border-radius: 10px;
+      margin: 24px 0;
+    }
+    .post-content code {
+      background: var(--gray-100);
+      color: var(--navy-900);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    .post-content pre {
+      background: var(--gray-100);
+      padding: 18px;
+      border-radius: 10px;
+      overflow-x: auto;
+      margin-bottom: 20px;
+    }
+    .post-content pre code {
+      background: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body class="blog-page">
+
+  <!-- ============================================================
+       NAVIGATION
+  ============================================================ -->
+  <header class="nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="assets/logo-nav.png" alt="Logixinity" style="height:74px;width:auto;" />
+      </a>
+
+      <nav aria-label="Main navigation">
+        <ul class="nav-links">
+          <li><a href="gen-lxi.html">Gen LXI</a></li>
+          <li><a href="propiq.html">Propiq</a></li>
+          <li><a href="index.html#how">How it works</a></li>
+          <li><a href="index.html#about">About</a></li>
+          <li><a href="blog.html" class="active">Blog</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <div class="nav-login-wrap" id="navLoginWrap">
+          <button class="login-toggle" id="loginToggle" aria-haspopup="true" aria-expanded="false">
+            Log in
+            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+          <div class="login-dropdown" id="loginDropdown" role="menu">
+            <span class="login-option disabled-option" role="menuitem" aria-disabled="true">
+              <div class="login-option-left">
+                <div class="login-option-name">Gen LXI</div>
+                <div class="login-option-note coming">Coming soon</div>
+              </div>
+            </span>
+            <a href="https://ramananraj.github.io/Wealth-Management-app/property-tracker.html" class="login-option" role="menuitem">
+              <div class="login-option-left">
+                <div class="login-option-name">Propiq</div>
+                <div class="login-option-note">Property tracker</div>
+              </div>
+              <span class="login-option-arrow">→</span>
+            </a>
+          </div>
+        </div>
+        <a href="gen-lxi.html#notify" class="btn-primary">Get notified</a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       BLOG LIST VIEW
+  ============================================================ -->
+  <div class="post-list-wrap" id="postListWrap">
+
+    <section class="blog-hero">
+      <div class="container">
+        <h1>Insights &amp; <em>ideas.</em></h1>
+        <p>Thoughts on AI-powered accounting, smart property investing, and building financial products for Australia.</p>
+
+        <div class="blog-filter" id="tagFilter">
+          <span class="blog-filter-label">Filter:</span>
+          <button class="filter-tag active" onclick="filterByTag('all', this)">All</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="blog-posts">
+      <div class="container">
+        <div class="posts-grid" id="postsGrid">
+          <div class="blog-loading">Loading posts…</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- ============================================================
+       SINGLE POST VIEW
+  ============================================================ -->
+  <div class="post-view" id="postView">
+    <div class="container">
+
+      <button class="post-back" onclick="closePost()">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Back to blog
+      </button>
+
+      <div id="postFullCover"></div>
+
+      <div class="post-full-header" id="postFullHeader"></div>
+      <div class="post-full-divider"></div>
+
+      <div class="post-content" id="postFullContent"></div>
+
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="footer" id="about">
+    <div class="container">
+      <div class="footer-top">
+
+        <div class="footer-brand">
+          <img src="assets/logo.png" alt="Logixinity" width="81" height="80" style="margin-bottom: 4px;" />
+          <p>
+            Financial products for Australian accountants, businesses,
+            and property investors. Melbourne, VIC 3000.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Products</h4>
+          <ul>
+            <li><a href="gen-lxi.html">Gen LXI</a></li>
+            <li><a href="propiq.html">Propiq</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="index.html#about">About</a></li>
+            <li><a href="blog.html">Blog</a></li>
+            <li><a href="mailto:support@logixinity.com">Contact</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Log in</h4>
+          <ul>
+            <li>
+              <div class="footer-account-product">Gen LXI</div>
+              <a href="#" style="opacity:0.5;pointer-events:none;">Coming soon</a>
+            </li>
+            <li>
+              <div class="footer-account-product">Propiq</div>
+              <a href="https://ramananraj.github.io/Wealth-Management-app/property-tracker.html">Log in to Propiq →</a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="footer-bottom">
+        <p>© 2026 Logixinity. All rights reserved.</p>
+        <div class="footer-legal">
+          <a href="/privacy-policy">Privacy policy</a>
+          <a href="/accessibility-statement">Accessibility</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+  <script src="js/main.js"></script>
+  <script>
+  /* ============================================================
+     BLOG CONFIG — update with your Supabase credentials
+  ============================================================ */
+
+  const SUPABASE_URL = '';  // e.g. 'https://xxxx.supabase.co'
+  const SUPABASE_ANON_KEY = '';  // your anon/public key
+
+  /* ============================================================
+     POSTS STORE
+  ============================================================ */
+
+  let allPosts  = [];
+  let activeTags = new Set();
+  let currentTag = 'all';
+
+  /* ============================================================
+     INIT
+  ============================================================ */
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Check if URL has a ?id= param (direct link to a post)
+    const params = new URLSearchParams(window.location.search);
+    const postId = params.get('id');
+
+    if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+      loadSupabase(() => {
+        fetchPosts().then(() => {
+          if (postId) openPostById(postId);
+        });
+      });
+    } else {
+      // Show "coming soon" state when Supabase not configured
+      renderNoPosts();
+      if (postId) {
+        // Try local anyway — will show empty
+      }
+    }
+  });
+
+  function loadSupabase(cb) {
+    if (window._sbReady) { cb(); return; }
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    script.onload = () => { window._sbReady = true; cb(); };
+    script.onerror = () => renderNoPosts();
+    document.head.appendChild(script);
+  }
+
+  async function fetchPosts() {
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const { data, error } = await sb
+      .from('blog_posts')
+      .select('*')
+      .eq('published', true)
+      .order('publish_date', { ascending: false, nullsFirst: false });
+
+    if (error || !data) {
+      renderNoPosts();
+      return;
+    }
+
+    allPosts = data;
+
+    // Build tag list
+    allPosts.forEach(p => {
+      if (p.tags) {
+        p.tags.split(',').map(t => t.trim()).filter(Boolean).forEach(t => activeTags.add(t));
+      }
+    });
+    buildTagFilter();
+    renderPosts(allPosts);
+  }
+
+  /* ============================================================
+     RENDER
+  ============================================================ */
+
+  function buildTagFilter() {
+    if (!activeTags.size) return;
+    const container = document.getElementById('tagFilter');
+    activeTags.forEach(tag => {
+      const btn = document.createElement('button');
+      btn.className = 'filter-tag';
+      btn.textContent = tag;
+      btn.onclick = () => filterByTag(tag, btn);
+      container.appendChild(btn);
+    });
+  }
+
+  function filterByTag(tag, btn) {
+    currentTag = tag;
+    document.querySelectorAll('.filter-tag').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filtered = tag === 'all' ? allPosts : allPosts.filter(p => {
+      if (!p.tags) return false;
+      return p.tags.split(',').map(t => t.trim()).includes(tag);
+    });
+    renderPosts(filtered);
+  }
+
+  function renderPosts(posts) {
+    const grid = document.getElementById('postsGrid');
+    if (!posts.length) {
+      grid.innerHTML = `<div class="blog-empty">
+        <h3>No posts yet</h3>
+        <p>Check back soon — we're working on something.</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = posts.map(p => {
+      const firstTag = p.tags ? p.tags.split(',')[0].trim() : null;
+      const date = p.publish_date ? fmtDate(p.publish_date) : null;
+      const excerpt = buildExcerpt(p.content);
+
+      return `<article class="post-card" onclick="openPost('${p.id}')">
+        <div class="post-card-cover">
+          ${p.cover_image
+            ? `<img src="${escHtml(p.cover_image)}" alt="${escHtml(p.title)}" loading="lazy" />`
+            : `<div class="post-card-cover-placeholder">
+                <svg width="40" height="40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                </svg>
+              </div>`
+          }
+        </div>
+        <div class="post-card-body">
+          <div class="post-meta">
+            ${firstTag ? `<span class="post-tag">${escHtml(firstTag)}</span>` : ''}
+            ${date ? `<span class="post-date">${date}</span>` : ''}
+          </div>
+          <h2 class="post-card-title">${escHtml(p.title)}</h2>
+          <p class="post-card-excerpt">${escHtml(excerpt)}</p>
+        </div>
+        <div class="post-card-footer">
+          <span class="post-author">${escHtml(p.author || 'Logixinity')}</span>
+          <span class="post-read-more">Read →</span>
+        </div>
+      </article>`;
+    }).join('');
+  }
+
+  function renderNoPosts() {
+    document.getElementById('postsGrid').innerHTML = `<div class="blog-empty">
+      <h3>Coming soon</h3>
+      <p>We're working on our first posts. Check back soon.</p>
+    </div>`;
+  }
+
+  /* ============================================================
+     SINGLE POST
+  ============================================================ -->
+
+  function openPost(id) {
+    const post = allPosts.find(p => p.id === id);
+    if (!post) return;
+    renderFullPost(post);
+    // Update URL without reload
+    window.history.pushState({ postId: id }, '', '?id=' + id);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function openPostById(id) {
+    const post = allPosts.find(p => p.id === id);
+    if (post) renderFullPost(post);
+  }
+
+  function closePost() {
+    document.getElementById('postView').classList.remove('active');
+    document.getElementById('postListWrap').classList.remove('hidden');
+    window.history.pushState({}, '', 'blog.html');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderFullPost(post) {
+    // Cover
+    const coverEl = document.getElementById('postFullCover');
+    if (post.cover_image) {
+      coverEl.className = 'post-full-cover';
+      coverEl.innerHTML = `<img src="${escHtml(post.cover_image)}" alt="${escHtml(post.title)}" />`;
+    } else {
+      coverEl.className = '';
+      coverEl.innerHTML = '';
+    }
+
+    // Header
+    const tags = post.tags
+      ? post.tags.split(',').map(t => `<span class="post-tag">${escHtml(t.trim())}</span>`).join('')
+      : '';
+    const initials = (post.author || 'L').split(' ').map(n => n[0]).join('').slice(0,2).toUpperCase();
+    const date = post.publish_date ? fmtDate(post.publish_date) : '';
+
+    document.getElementById('postFullHeader').innerHTML = `
+      ${tags ? `<div class="post-full-tags">${tags}</div>` : ''}
+      <h1 class="post-full-title">${escHtml(post.title)}</h1>
+      <div class="post-full-meta">
+        <div class="post-full-author">
+          <div class="post-full-author-avatar">${escHtml(initials)}</div>
+          <span class="post-full-author-name">${escHtml(post.author || 'Logixinity')}</span>
+        </div>
+        ${date ? `<span class="post-full-date">${date}</span>` : ''}
+      </div>
+    `;
+
+    // Content — rendered as HTML (written by trusted admin)
+    document.getElementById('postFullContent').innerHTML = post.content || '';
+
+    // Show post, hide list
+    document.getElementById('postListWrap').classList.add('hidden');
+    document.getElementById('postView').classList.add('active');
+  }
+
+  // Handle browser back button
+  window.addEventListener('popstate', e => {
+    if (e.state && e.state.postId) {
+      openPost(e.state.postId);
+    } else {
+      closePost();
+    }
+  });
+
+  /* ============================================================
+     HELPERS
+  ============================================================ */
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+
+  function fmtDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
+  function buildExcerpt(content) {
+    if (!content) return '';
+    // Strip HTML tags and get first ~160 chars
+    const text = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g,' ').trim();
+    return text.length > 160 ? text.slice(0, 157) + '…' : text;
+  }
+  </script>
+</body>
+</html>

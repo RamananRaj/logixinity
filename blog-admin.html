@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Admin — Logixinity</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <style>
+    /* ── Blog Admin Extensions ── */
+
+    /* Editor layout */
+    .editor-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 20px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .editor-grid { grid-template-columns: 1fr; }
+    }
+
+    .editor-main, .editor-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Form elements */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-md);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s;
+      width: 100%;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: var(--teal-400);
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255,255,255,0.25);
+    }
+    .form-group select option {
+      background: #1e3a6e;
+      color: var(--white);
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 320px;
+      line-height: 1.65;
+      font-size: 14px;
+    }
+    .form-group textarea.content-area {
+      min-height: 480px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13.5px;
+    }
+
+    /* Content hint */
+    .content-hint {
+      font-size: 11.5px;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-top: 2px;
+    }
+    .content-hint code {
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      padding: 1px 4px;
+      font-size: 11px;
+    }
+
+    /* Tags input */
+    .tags-hint {
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    /* Status toggle */
+    .publish-toggle {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border-md);
+      border-radius: 10px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .publish-toggle:hover {
+      background: rgba(255,255,255,0.07);
+    }
+    .toggle-switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      background: rgba(255,255,255,0.15);
+      border-radius: 20px;
+      transition: background 0.2s;
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 14px;
+      height: 14px;
+      background: var(--white);
+      border-radius: 50%;
+      transition: transform 0.2s;
+    }
+    .toggle-switch input:checked ~ .toggle-track { background: var(--teal-400); }
+    .toggle-switch input:checked ~ .toggle-thumb { transform: translateX(16px); }
+    .toggle-label {
+      flex: 1;
+    }
+    .toggle-label-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--white);
+    }
+    .toggle-label-sub {
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+
+    /* Cover image preview */
+    .cover-preview {
+      width: 100%;
+      height: 160px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .cover-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Action buttons */
+    .editor-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .btn-save {
+      flex: 1;
+      padding: 11px 20px;
+      background: var(--teal-400);
+      color: #05101f;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .btn-save:hover { background: var(--teal-500); }
+    .btn-save:disabled { opacity: 0.5; cursor: default; }
+    .btn-secondary {
+      padding: 11px 16px;
+      background: rgba(255,255,255,0.06);
+      color: var(--white);
+      border: 1px solid var(--border-md);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+    .btn-danger {
+      padding: 11px 16px;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .btn-danger:hover { background: rgba(248,113,113,0.18); }
+
+    /* Save feedback */
+    .save-status {
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      display: none;
+    }
+    .save-status.success {
+      display: block;
+      background: var(--success-bg);
+      color: var(--success);
+      border: 1px solid rgba(52,211,153,0.2);
+    }
+    .save-status.error {
+      display: block;
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid rgba(248,113,113,0.2);
+    }
+
+    /* Posts table row actions */
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .row-btn {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.15s;
+    }
+    .row-btn.edit {
+      background: rgba(255,255,255,0.06);
+      color: var(--white);
+      border-color: var(--border-md);
+    }
+    .row-btn.edit:hover { background: rgba(255,255,255,0.12); }
+    .row-btn.del {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border-color: rgba(248,113,113,0.2);
+    }
+    .row-btn.del:hover { background: rgba(248,113,113,0.18); }
+
+    /* Status badge — published/draft */
+    .badge.published {
+      background: var(--success-bg);
+      color: var(--success);
+    }
+    .badge.draft {
+      background: rgba(255,255,255,0.06);
+      color: var(--muted);
+    }
+
+    /* Tags display */
+    .tag-pill {
+      display: inline-block;
+      background: rgba(45, 212, 170, 0.12);
+      color: var(--teal-400);
+      border-radius: 100px;
+      padding: 2px 9px;
+      font-size: 11px;
+      font-weight: 600;
+      margin: 1px 2px 1px 0;
+    }
+
+    /* Setup SQL block */
+    .sql-block {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border-md);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12px;
+      line-height: 1.7;
+      color: #a8d8c0;
+      white-space: pre;
+      overflow-x: auto;
+    }
+
+    /* Delete confirm modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(5,16,26,0.85);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      display: none;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: var(--navy-800);
+      border: 1px solid var(--border-md);
+      border-radius: 14px;
+      padding: 28px;
+      max-width: 380px;
+      width: 90%;
+    }
+    .modal-box h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .modal-box p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 22px;
+      line-height: 1.5;
+    }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* Supabase not-configured notice */
+    .sb-notice {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.25);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--warning);
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .sb-notice svg { flex-shrink: 0; margin-top: 1px; }
+    .sb-notice a { color: var(--teal-400); text-decoration: underline; cursor: pointer; }
+
+    /* New post floating button */
+    .new-post-btn {
+      padding: 10px 18px;
+      background: var(--teal-400);
+      color: #05101f;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+    }
+    .new-post-btn:hover { background: var(--teal-500); }
+
+    /* Empty state */
+    .empty-state {
+      padding: 48px 24px;
+      text-align: center;
+    }
+    .empty-state p { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+
+    /* Section card sub-header */
+    .section-card-subheader {
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .filter-chip {
+      padding: 5px 12px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .filter-chip.active, .filter-chip:hover {
+      background: rgba(45,212,170,0.1);
+      border-color: rgba(45,212,170,0.3);
+      color: var(--teal-400);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGIN SCREEN
+============================================================ -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-dot"></div>
+      Logixinity
+    </div>
+    <div class="login-subtitle">Blog Admin Console</div>
+
+    <h2>Sign in</h2>
+
+    <div class="form-group" style="margin-bottom:14px;">
+      <label for="adminPass">Admin Password</label>
+      <input type="password" id="adminPass" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" onclick="handleLogin()">Sign in</button>
+    <div class="login-error" id="loginError">Incorrect password. Please try again.</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     ADMIN SHELL
+============================================================ -->
+<div class="admin-wrap" id="adminWrap">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-dot"></div>
+      Logixinity
+    </div>
+    <div class="sidebar-product">Blog Admin</div>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section">Content</div>
+      <button class="sidebar-link active" onclick="showPanel('posts', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        All Posts
+      </button>
+      <button class="sidebar-link" onclick="openNewPost()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Post
+      </button>
+
+      <div class="sidebar-section">System</div>
+      <button class="sidebar-link" onclick="showPanel('settings', this)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>
+        Settings
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="admin-name">Blog Admin</div>
+      <div>Logixinity Internal</div>
+      <button class="logout-btn" onclick="handleLogout()">← Sign out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div>
+        <h1 id="topbarTitle">All Posts</h1>
+        <div class="topbar-meta" id="topbarMeta">Logixinity blog · Powered by Supabase</div>
+      </div>
+      <button class="new-post-btn" onclick="openNewPost()">+ New post</button>
+    </div>
+
+    <div class="admin-content">
+
+      <!-- ============================================================
+           PANEL: ALL POSTS
+      ============================================================ -->
+      <div class="admin-panel active" id="panel-posts">
+
+        <div id="sbNotice" class="sb-notice" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Supabase is not configured. Posts are stored locally for preview only. <a onclick="showPanel('settings', document.querySelector('.sidebar-link:last-of-type'))">Go to Settings →</a></span>
+        </div>
+
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Blog Posts</h2>
+              <p id="postsCount">Loading…</p>
+            </div>
+          </div>
+
+          <div class="section-card-subheader">
+            <button class="filter-chip active" onclick="filterPosts('all', this)">All</button>
+            <button class="filter-chip" onclick="filterPosts('published', this)">Published</button>
+            <button class="filter-chip" onclick="filterPosts('draft', this)">Draft</button>
+          </div>
+
+          <div class="section-card-body">
+            <div class="table-wrap">
+              <table id="postsTable">
+                <thead>
+                  <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Tags</th>
+                    <th>Status</th>
+                    <th>Publish Date</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="postsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /panel-posts -->
+
+
+      <!-- ============================================================
+           PANEL: EDITOR
+      ============================================================ -->
+      <div class="admin-panel" id="panel-editor">
+
+        <div class="editor-grid">
+
+          <!-- Left: main content fields -->
+          <div class="editor-main">
+
+            <div class="section-card">
+              <div class="section-card-header">
+                <div>
+                  <h2 id="editorTitle">New Post</h2>
+                  <p>Write your post below. HTML is supported in the content field.</p>
+                </div>
+              </div>
+              <div class="section-card-body" style="display:flex;flex-direction:column;gap:16px;">
+
+                <div class="form-group">
+                  <label for="fTitle">Title *</label>
+                  <input type="text" id="fTitle" placeholder="e.g. How AI is changing Australian accounting" />
+                </div>
+
+                <div class="form-group">
+                  <label for="fContent">Content *</label>
+                  <textarea class="content-area" id="fContent" placeholder="Write your post content here. You can use HTML tags for formatting:&#10;&#10;<h2>Section heading</h2>&#10;<p>Paragraph text here.</p>&#10;<strong>Bold text</strong>, <em>italic text</em>&#10;<ul><li>Bullet point</li></ul>&#10;<a href=&quot;https://...&quot;>Link text</a>"></textarea>
+                  <div class="content-hint">
+                    Supports HTML. Use <code>&lt;h2&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;ul&gt;/&lt;li&gt;</code>, <code>&lt;a href="..."&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;img src="..."&gt;</code>.
+                  </div>
+                </div>
+
+                <div class="save-status" id="saveStatus"></div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Right: metadata sidebar -->
+          <div class="editor-sidebar">
+
+            <!-- Publish -->
+            <div class="section-card">
+              <div class="section-card-header" style="padding-bottom:12px;">
+                <div><h2>Publish</h2></div>
+              </div>
+              <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+
+                <label class="publish-toggle">
+                  <div class="toggle-switch">
+                    <input type="checkbox" id="fPublished" />
+                    <div class="toggle-track"></div>
+                    <div class="toggle-thumb"></div>
+                  </div>
+                  <div class="toggle-label">
+                    <div class="toggle-label-title" id="publishToggleLabel">Draft</div>
+                    <div class="toggle-label-sub">Toggle to publish</div>
+                  </div>
+                </label>
+
+                <div class="editor-actions">
+                  <button class="btn-save" id="btnSave" onclick="savePost()">Save post</button>
+                </div>
+
+                <button class="btn-danger" id="btnDelete" onclick="confirmDelete()" style="display:none;">Delete post</button>
+                <button class="btn-secondary" onclick="cancelEdit()">← Back to posts</button>
+
+              </div>
+            </div>
+
+            <!-- Meta fields -->
+            <div class="section-card">
+              <div class="section-card-header" style="padding-bottom:12px;">
+                <div><h2>Details</h2></div>
+              </div>
+              <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+
+                <div class="form-group">
+                  <label for="fAuthor">Author</label>
+                  <input type="text" id="fAuthor" placeholder="e.g. Ram Raj" />
+                </div>
+
+                <div class="form-group">
+                  <label for="fDate">Publish Date</label>
+                  <input type="date" id="fDate" />
+                </div>
+
+                <div class="form-group">
+                  <label for="fTags">Tags</label>
+                  <input type="text" id="fTags" placeholder="e.g. Accounting, AI, Xero" />
+                  <span class="tags-hint">Comma-separated</span>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Cover image -->
+            <div class="section-card">
+              <div class="section-card-header" style="padding-bottom:12px;">
+                <div><h2>Cover Image</h2></div>
+              </div>
+              <div class="section-card-body" style="display:flex;flex-direction:column;gap:12px;">
+
+                <div class="cover-preview" id="coverPreview">
+                  <span>No image set</span>
+                </div>
+
+                <div class="form-group">
+                  <label for="fCover">Image URL</label>
+                  <input type="url" id="fCover" placeholder="https://..." oninput="updateCoverPreview()" />
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div><!-- /panel-editor -->
+
+
+      <!-- ============================================================
+           PANEL: SETTINGS
+      ============================================================ -->
+      <div class="admin-panel" id="panel-settings">
+
+        <!-- Supabase setup -->
+        <div class="section-card" style="margin-bottom:20px;">
+          <div class="section-card-header">
+            <div>
+              <h2>Supabase Connection</h2>
+              <p>Blog posts are stored in your Supabase project. Enter your credentials below.</p>
+            </div>
+          </div>
+          <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+
+            <div class="form-group">
+              <label>Supabase Project URL</label>
+              <input type="text" id="cfg-sb-url" placeholder="https://xxxxxxxxxxxx.supabase.co" />
+            </div>
+            <div class="form-group">
+              <label>Supabase Anon Key</label>
+              <input type="password" id="cfg-sb-key" placeholder="eyJhbGci..." />
+            </div>
+            <button class="btn-save" style="max-width:160px;" onclick="saveSettings()">Save & reconnect</button>
+
+          </div>
+        </div>
+
+        <!-- Database setup -->
+        <div class="section-card" style="margin-bottom:20px;">
+          <div class="section-card-header">
+            <div>
+              <h2>Database Setup</h2>
+              <p>Run this SQL once in your Supabase dashboard (SQL Editor) to create the blog posts table.</p>
+            </div>
+          </div>
+          <div class="section-card-body">
+            <div class="azure-note" style="margin-bottom:16px;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <div>In Supabase → SQL Editor, paste and run the SQL below. Then go to Authentication → Policies and enable RLS with the policies shown.</div>
+            </div>
+            <pre class="sql-block">-- 1. Create the blog_posts table
+CREATE TABLE IF NOT EXISTS blog_posts (
+  id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+  title       text        NOT NULL,
+  content     text        NOT NULL DEFAULT '',
+  cover_image text,
+  author      text,
+  publish_date date,
+  tags        text,
+  published   boolean     DEFAULT false,
+  created_at  timestamptz DEFAULT now(),
+  updated_at  timestamptz DEFAULT now()
+);
+
+-- 2. Enable Row Level Security
+ALTER TABLE blog_posts ENABLE ROW LEVEL SECURITY;
+
+-- 3. Public can read published posts (for blog.html)
+CREATE POLICY "Public read published"
+  ON blog_posts FOR SELECT
+  USING (published = true);
+
+-- 4. Anon can do everything (admin page uses anon key)
+--    In production, restrict this to authenticated users
+CREATE POLICY "Anon full access"
+  ON blog_posts FOR ALL
+  USING (true)
+  WITH CHECK (true);</pre>
+          </div>
+        </div>
+
+        <!-- Password change -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h2>Admin Password</h2>
+              <p>Change the password used to access this admin console. Default: <code style="opacity:0.6;">logixinity2026</code></p>
+            </div>
+          </div>
+          <div class="section-card-body" style="display:flex;flex-direction:column;gap:14px;">
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" id="cfg-new-pass" placeholder="Enter new password" />
+            </div>
+            <div class="form-group">
+              <label>Confirm Password</label>
+              <input type="password" id="cfg-confirm-pass" placeholder="Repeat new password" />
+            </div>
+            <div class="save-status" id="passStatus"></div>
+            <button class="btn-save" style="max-width:200px;" onclick="changePassword()">Update password</button>
+          </div>
+        </div>
+
+      </div><!-- /panel-settings -->
+
+    </div><!-- /admin-content -->
+  </main>
+</div><!-- /admin-wrap -->
+
+
+<!-- Delete confirmation modal -->
+<div class="modal-overlay" id="deleteModal">
+  <div class="modal-box">
+    <h3>Delete post?</h3>
+    <p id="deleteModalText">This action cannot be undone. The post will be permanently removed from Supabase.</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeDeleteModal()">Cancel</button>
+      <button class="btn-danger" onclick="doDelete()">Yes, delete</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ============================================================
+   CONFIG — stored in sessionStorage
+============================================================ */
+
+const DEFAULT_PASSWORD = 'logixinity2026';
+let supabase = null;  // Supabase client reference
+let allPosts  = [];   // local cache
+let editingId = null; // post being edited (null = new)
+
+/* ============================================================
+   AUTH
+============================================================ */
+
+function getPassword() {
+  return sessionStorage.getItem('blog_admin_pass') || DEFAULT_PASSWORD;
+}
+
+function handleLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === getPassword()) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminWrap').classList.add('visible');
+    initSupabase();
+    fetchPosts();
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+document.getElementById('adminPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
+
+function handleLogout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminWrap').classList.remove('visible');
+  document.getElementById('adminPass').value = '';
+  document.getElementById('loginError').style.display = 'none';
+}
+
+/* ============================================================
+   SUPABASE INIT
+============================================================ */
+
+function initSupabase() {
+  const url = sessionStorage.getItem('sb_url') || '';
+  const key = sessionStorage.getItem('sb_key') || '';
+
+  if (!url || !key) {
+    document.getElementById('sbNotice').style.display = 'flex';
+    loadSettings();
+    return;
+  }
+
+  // Dynamically load Supabase client
+  if (!window._sbLoaded) {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+    script.onload = () => {
+      window._sbLoaded = true;
+      supabase = window.supabase.createClient(url, key);
+      document.getElementById('sbNotice').style.display = 'none';
+      fetchPosts();
+    };
+    script.onerror = () => {
+      document.getElementById('sbNotice').style.display = 'flex';
+    };
+    document.head.appendChild(script);
+  } else {
+    supabase = window.supabase.createClient(url, key);
+    document.getElementById('sbNotice').style.display = 'none';
+  }
+}
+
+/* ============================================================
+   FETCH POSTS
+============================================================ */
+
+async function fetchPosts() {
+  if (!supabase) {
+    // No Supabase — show empty state with prompt
+    allPosts = [];
+    renderPostsTable(allPosts);
+    return;
+  }
+
+  document.getElementById('postsCount').textContent = 'Loading…';
+  const { data, error } = await supabase
+    .from('blog_posts')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    document.getElementById('postsCount').textContent = 'Error loading posts: ' + error.message;
+    allPosts = [];
+  } else {
+    allPosts = data || [];
+  }
+  renderPostsTable(allPosts);
+}
+
+/* ============================================================
+   RENDER POSTS TABLE
+============================================================ */
+
+let currentFilter = 'all';
+
+function filterPosts(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  renderPostsTable(allPosts);
+}
+
+function renderPostsTable(posts) {
+  const filtered = posts.filter(p => {
+    if (currentFilter === 'published') return p.published;
+    if (currentFilter === 'draft') return !p.published;
+    return true;
+  });
+
+  const publishedCount = posts.filter(p => p.published).length;
+  const draftCount     = posts.filter(p => !p.published).length;
+  document.getElementById('postsCount').textContent =
+    `${posts.length} post${posts.length !== 1 ? 's' : ''} · ${publishedCount} published · ${draftCount} draft`;
+
+  const tbody = document.getElementById('postsTableBody');
+
+  if (!filtered.length) {
+    tbody.innerHTML = `<tr><td colspan="6">
+      <div class="empty-state">
+        <p>${posts.length === 0 ? 'No posts yet. Click "+ New post" to write your first one.' : 'No posts match this filter.'}</p>
+        ${posts.length === 0 ? '<button class="btn-save" style="max-width:160px;margin:0 auto;" onclick="openNewPost()">+ New post</button>' : ''}
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(p => {
+    const tags = parseTags(p.tags).map(t => `<span class="tag-pill">${escHtml(t)}</span>`).join('');
+    const status = p.published
+      ? `<span class="badge published"><span class="badge-dot"></span>Published</span>`
+      : `<span class="badge draft"><span class="badge-dot"></span>Draft</span>`;
+    const date = p.publish_date ? fmtDate(p.publish_date) : '—';
+
+    return `<tr>
+      <td><strong>${escHtml(p.title)}</strong></td>
+      <td>${escHtml(p.author || '—')}</td>
+      <td>${tags || '<span style="color:var(--muted);font-size:12px;">—</span>'}</td>
+      <td>${status}</td>
+      <td>${date}</td>
+      <td>
+        <div class="row-actions">
+          <button class="row-btn edit" onclick="openEditor('${p.id}')">Edit</button>
+          <button class="row-btn del" onclick="confirmDeleteById('${p.id}', \`${escHtml(p.title).replace(/`/g, '\\`')}\`)">Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ============================================================
+   EDITOR
+============================================================ */
+
+function openNewPost() {
+  editingId = null;
+  clearEditor();
+  document.getElementById('editorTitle').textContent = 'New Post';
+  document.getElementById('btnDelete').style.display = 'none';
+
+  // Set default author and today's date
+  document.getElementById('fAuthor').value = 'Logixinity';
+  document.getElementById('fDate').value = new Date().toISOString().split('T')[0];
+
+  showPanel('editor', null);
+}
+
+function openEditor(id) {
+  const post = allPosts.find(p => p.id === id);
+  if (!post) return;
+
+  editingId = id;
+  document.getElementById('editorTitle').textContent = 'Edit Post';
+  document.getElementById('btnDelete').style.display = 'block';
+
+  document.getElementById('fTitle').value     = post.title      || '';
+  document.getElementById('fContent').value   = post.content    || '';
+  document.getElementById('fAuthor').value    = post.author     || '';
+  document.getElementById('fDate').value      = post.publish_date || '';
+  document.getElementById('fTags').value      = post.tags       || '';
+  document.getElementById('fCover').value     = post.cover_image || '';
+  document.getElementById('fPublished').checked = !!post.published;
+
+  updatePublishLabel();
+  updateCoverPreview();
+  clearSaveStatus();
+
+  showPanel('editor', null);
+}
+
+function clearEditor() {
+  ['fTitle','fContent','fAuthor','fDate','fTags','fCover'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('fPublished').checked = false;
+  updatePublishLabel();
+  updateCoverPreview();
+  clearSaveStatus();
+}
+
+function cancelEdit() {
+  showPanel('posts', document.querySelector('.sidebar-link'));
+}
+
+function updatePublishLabel() {
+  const checked = document.getElementById('fPublished').checked;
+  document.getElementById('publishToggleLabel').textContent = checked ? 'Published' : 'Draft';
+}
+document.getElementById('fPublished').addEventListener('change', updatePublishLabel);
+
+function updateCoverPreview() {
+  const url = document.getElementById('fCover').value.trim();
+  const preview = document.getElementById('coverPreview');
+  if (url) {
+    preview.innerHTML = `<img src="${escHtml(url)}" alt="Cover" onerror="this.parentElement.innerHTML='<span>Image not found</span>'" />`;
+  } else {
+    preview.innerHTML = '<span>No image set</span>';
+  }
+}
+
+/* ============================================================
+   SAVE POST
+============================================================ */
+
+async function savePost() {
+  const title   = document.getElementById('fTitle').value.trim();
+  const content = document.getElementById('fContent').value.trim();
+
+  if (!title) { showSaveStatus('error', 'Title is required.'); return; }
+  if (!content) { showSaveStatus('error', 'Content is required.'); return; }
+
+  const payload = {
+    title,
+    content,
+    author:       document.getElementById('fAuthor').value.trim() || null,
+    publish_date: document.getElementById('fDate').value || null,
+    tags:         document.getElementById('fTags').value.trim() || null,
+    cover_image:  document.getElementById('fCover').value.trim() || null,
+    published:    document.getElementById('fPublished').checked,
+    updated_at:   new Date().toISOString(),
+  };
+
+  const btn = document.getElementById('btnSave');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+
+  if (!supabase) {
+    // Local mock save (no Supabase)
+    if (editingId) {
+      const idx = allPosts.findIndex(p => p.id === editingId);
+      if (idx > -1) allPosts[idx] = { ...allPosts[idx], ...payload };
+    } else {
+      const newPost = { id: 'local_' + Date.now(), created_at: new Date().toISOString(), ...payload };
+      allPosts.unshift(newPost);
+      editingId = newPost.id;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Save post';
+    document.getElementById('btnDelete').style.display = 'block';
+    document.getElementById('editorTitle').textContent = 'Edit Post';
+    showSaveStatus('success', 'Saved locally (Supabase not configured). Configure Supabase in Settings to persist posts.');
+    return;
+  }
+
+  let error;
+  if (editingId) {
+    const result = await supabase.from('blog_posts').update(payload).eq('id', editingId);
+    error = result.error;
+  } else {
+    payload.created_at = new Date().toISOString();
+    const result = await supabase.from('blog_posts').insert(payload).select().single();
+    error = result.error;
+    if (!error && result.data) {
+      editingId = result.data.id;
+      allPosts.unshift(result.data);
+      document.getElementById('btnDelete').style.display = 'block';
+      document.getElementById('editorTitle').textContent = 'Edit Post';
+    }
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Save post';
+
+  if (error) {
+    showSaveStatus('error', 'Save failed: ' + error.message);
+  } else {
+    showSaveStatus('success', 'Post saved successfully.');
+    await fetchPosts();
+  }
+}
+
+function showSaveStatus(type, msg) {
+  const el = document.getElementById('saveStatus');
+  el.className = 'save-status ' + type;
+  el.textContent = msg;
+  if (type === 'success') {
+    setTimeout(() => { el.className = 'save-status'; }, 4000);
+  }
+}
+
+function clearSaveStatus() {
+  const el = document.getElementById('saveStatus');
+  el.className = 'save-status';
+  el.textContent = '';
+}
+
+/* ============================================================
+   DELETE
+============================================================ */
+
+let deleteTargetId = null;
+
+function confirmDelete() {
+  if (!editingId) return;
+  const post = allPosts.find(p => p.id === editingId);
+  confirmDeleteById(editingId, post ? post.title : 'this post');
+}
+
+function confirmDeleteById(id, title) {
+  deleteTargetId = id;
+  document.getElementById('deleteModalText').textContent =
+    `"${title}" will be permanently deleted. This cannot be undone.`;
+  document.getElementById('deleteModal').classList.add('open');
+}
+
+function closeDeleteModal() {
+  document.getElementById('deleteModal').classList.remove('open');
+  deleteTargetId = null;
+}
+
+async function doDelete() {
+  if (!deleteTargetId) return;
+  closeDeleteModal();
+
+  if (!supabase) {
+    allPosts = allPosts.filter(p => p.id !== deleteTargetId);
+    if (editingId === deleteTargetId) {
+      editingId = null;
+      cancelEdit();
+    }
+    renderPostsTable(allPosts);
+    return;
+  }
+
+  const { error } = await supabase.from('blog_posts').delete().eq('id', deleteTargetId);
+  if (error) {
+    alert('Delete failed: ' + error.message);
+  } else {
+    allPosts = allPosts.filter(p => p.id !== deleteTargetId);
+    if (editingId === deleteTargetId) {
+      editingId = null;
+      showPanel('posts', document.querySelector('.sidebar-link'));
+    }
+    renderPostsTable(allPosts);
+  }
+}
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+const PANEL_TITLES = {
+  posts:    'All Posts',
+  editor:   'Post Editor',
+  settings: 'Settings',
+};
+
+function showPanel(id, btn) {
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-link').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  document.getElementById('topbarTitle').textContent = PANEL_TITLES[id] || id;
+
+  if (id === 'posts') fetchPosts();
+  if (id === 'settings') loadSettings();
+}
+
+/* ============================================================
+   SETTINGS
+============================================================ */
+
+function loadSettings() {
+  document.getElementById('cfg-sb-url').value = sessionStorage.getItem('sb_url') || '';
+  document.getElementById('cfg-sb-key').value = sessionStorage.getItem('sb_key') || '';
+}
+
+function saveSettings() {
+  const url = document.getElementById('cfg-sb-url').value.trim();
+  const key = document.getElementById('cfg-sb-key').value.trim();
+  if (url) sessionStorage.setItem('sb_url', url);
+  if (key) sessionStorage.setItem('sb_key', key);
+  window._sbLoaded = false;
+  supabase = null;
+  initSupabase();
+  alert('Settings saved. Reconnecting to Supabase…');
+}
+
+function changePassword() {
+  const newPass     = document.getElementById('cfg-new-pass').value;
+  const confirmPass = document.getElementById('cfg-confirm-pass').value;
+  const status      = document.getElementById('passStatus');
+
+  if (!newPass) {
+    status.className = 'save-status error';
+    status.textContent = 'Please enter a new password.';
+    return;
+  }
+  if (newPass !== confirmPass) {
+    status.className = 'save-status error';
+    status.textContent = 'Passwords do not match.';
+    return;
+  }
+  sessionStorage.setItem('blog_admin_pass', newPass);
+  document.getElementById('cfg-new-pass').value = '';
+  document.getElementById('cfg-confirm-pass').value = '';
+  status.className = 'save-status success';
+  status.textContent = 'Password updated. Takes effect on next login.';
+  setTimeout(() => { status.className = 'save-status'; }, 4000);
+}
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+function parseTags(tagStr) {
+  if (!tagStr) return [];
+  return tagStr.split(',').map(t => t.trim()).filter(Boolean);
+}
+
+function fmtDate(dateStr) {
+  if (!dateStr) return '—';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-AU', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+</script>
+</body>
+</html>
