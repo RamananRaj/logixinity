@@ -766,10 +766,13 @@ CREATE POLICY "Anon full access"
 
 <script>
 /* ============================================================
-   CONFIG — stored in sessionStorage
+   CONFIG
 ============================================================ */
 
-const DEFAULT_PASSWORD = 'logixinity2026';
+const DEFAULT_PASSWORD  = 'logixinity2026';
+const DEFAULT_SB_URL    = 'https://zgfbtdsxisyidcrsahky.supabase.co';
+const DEFAULT_SB_KEY    = 'sb_publishable_jjk1YcqcRYxw1mhUiMdRKw_DPYjkWyI';
+
 let supabase = null;  // Supabase client reference
 let allPosts  = [];   // local cache
 let editingId = null; // post being edited (null = new)
@@ -809,34 +812,26 @@ function handleLogout() {
    SUPABASE INIT
 ============================================================ */
 
-function initSupabase() {
-  const url = sessionStorage.getItem('sb_url') || '';
-  const key = sessionStorage.getItem('sb_key') || '';
+function initSupabase(cb) {
+  const url = sessionStorage.getItem('sb_url') || DEFAULT_SB_URL;
+  const key = sessionStorage.getItem('sb_key') || DEFAULT_SB_KEY;
 
-  if (!url || !key) {
-    document.getElementById('sbNotice').style.display = 'flex';
-    loadSettings();
+  const onReady = () => {
+    supabase = window.supabase.createClient(url, key);
+    document.getElementById('sbNotice').style.display = 'none';
+    if (cb) cb(); else fetchPosts();
+  };
+
+  if (window._sbLoaded) {
+    onReady();
     return;
   }
 
-  // Dynamically load Supabase client
-  if (!window._sbLoaded) {
-    const script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-    script.onload = () => {
-      window._sbLoaded = true;
-      supabase = window.supabase.createClient(url, key);
-      document.getElementById('sbNotice').style.display = 'none';
-      fetchPosts();
-    };
-    script.onerror = () => {
-      document.getElementById('sbNotice').style.display = 'flex';
-    };
-    document.head.appendChild(script);
-  } else {
-    supabase = window.supabase.createClient(url, key);
-    document.getElementById('sbNotice').style.display = 'none';
-  }
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+  script.onload = () => { window._sbLoaded = true; onReady(); };
+  script.onerror = () => { document.getElementById('sbNotice').style.display = 'flex'; };
+  document.head.appendChild(script);
 }
 
 /* ============================================================
@@ -1169,10 +1164,11 @@ function saveSettings() {
   const key = document.getElementById('cfg-sb-key').value.trim();
   if (url) sessionStorage.setItem('sb_url', url);
   if (key) sessionStorage.setItem('sb_key', key);
-  window._sbLoaded = false;
   supabase = null;
-  initSupabase();
-  alert('Settings saved. Reconnecting to Supabase…');
+  initSupabase(() => {
+    alert('Settings saved. Supabase connected.');
+    fetchPosts();
+  });
 }
 
 function changePassword() {
