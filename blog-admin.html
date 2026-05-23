@@ -790,8 +790,7 @@ function handleLogin() {
   if (pass === getPassword()) {
     document.getElementById('loginScreen').style.display = 'none';
     document.getElementById('adminWrap').classList.add('visible');
-    initSupabase();
-    fetchPosts();
+    initSupabase(); // initSupabase calls fetchPosts() once ready
   } else {
     document.getElementById('loginError').style.display = 'block';
   }
