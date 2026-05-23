@@ -778,7 +778,7 @@ const DEFAULT_PASSWORD  = 'logixinity2026';
 const DEFAULT_SB_URL    = 'https://zgfbtdsxisyidcrsahky.supabase.co';
 const DEFAULT_SB_KEY    = 'sb_publishable_jjk1YcqcRYxw1mhUiMdRKw_DPYjkWyI';
 
-let supabase = null;  // Supabase client reference
+let sbClient = null;  // Supabase client reference
 let allPosts  = [];   // local cache
 let editingId = null; // post being edited (null = new)
 
@@ -822,11 +822,11 @@ function initSupabase(cb) {
   const key = sessionStorage.getItem('sb_key') || DEFAULT_SB_KEY;
 
   try {
-    supabase = window.supabase.createClient(url, key);
+    sbClient = window.supabase.createClient(url, key);
     document.getElementById('sbNotice').style.display = 'none';
 
     // Quick connection test — update header with live status
-    supabase.from('blog_posts').select('count', { count: 'exact', head: true }).then(({ error }) => {
+    sbClient.from('blog_posts').select('count', { count: 'exact', head: true }).then(({ error }) => {
       const meta = document.getElementById('topbarMeta');
       if (error) {
         meta.innerHTML = 'Logixinity blog · <span style="color:#f87171;">⚠ Supabase error: ' + error.message + '</span>';
@@ -849,7 +849,7 @@ function initSupabase(cb) {
 ============================================================ */
 
 async function fetchPosts() {
-  if (!supabase) {
+  if (!sbClient) {
     // No Supabase — show empty state with prompt
     allPosts = [];
     renderPostsTable(allPosts);
@@ -857,7 +857,7 @@ async function fetchPosts() {
   }
 
   document.getElementById('postsCount').textContent = 'Loading…';
-  const { data, error } = await supabase
+  const { data, error } = await sbClient
     .from('blog_posts')
     .select('*')
     .order('created_at', { ascending: false });
@@ -1028,31 +1028,20 @@ async function savePost() {
   btn.disabled = true;
   btn.textContent = 'Saving…';
 
-  if (!supabase) {
-    // Local mock save (no Supabase)
-    if (editingId) {
-      const idx = allPosts.findIndex(p => p.id === editingId);
-      if (idx > -1) allPosts[idx] = { ...allPosts[idx], ...payload };
-    } else {
-      const newPost = { id: 'local_' + Date.now(), created_at: new Date().toISOString(), ...payload };
-      allPosts.unshift(newPost);
-      editingId = newPost.id;
-    }
+  if (!sbClient) {
     btn.disabled = false;
     btn.textContent = 'Save post';
-    document.getElementById('btnDelete').style.display = 'block';
-    document.getElementById('editorTitle').textContent = 'Edit Post';
-    showSaveStatus('success', 'Saved locally (Supabase not configured). Configure Supabase in Settings to persist posts.');
+    alert('❌ Not connected to Supabase. Please refresh the page and try again.');
     return;
   }
 
   let error;
   if (editingId) {
-    const result = await supabase.from('blog_posts').update(payload).eq('id', editingId);
+    const result = await sbClient.from('blog_posts').update(payload).eq('id', editingId);
     error = result.error;
   } else {
     payload.created_at = new Date().toISOString();
-    const result = await supabase.from('blog_posts').insert(payload).select().single();
+    const result = await sbClient.from('blog_posts').insert(payload).select().single();
     error = result.error;
     if (!error && result.data) {
       editingId = result.data.id;
@@ -1117,17 +1106,9 @@ async function doDelete() {
   if (!deleteTargetId) return;
   closeDeleteModal();
 
-  if (!supabase) {
-    allPosts = allPosts.filter(p => p.id !== deleteTargetId);
-    if (editingId === deleteTargetId) {
-      editingId = null;
-      cancelEdit();
-    }
-    renderPostsTable(allPosts);
-    return;
-  }
+  if (!sbClient) { alert('Not connected to Supabase.'); return; }
 
-  const { error } = await supabase.from('blog_posts').delete().eq('id', deleteTargetId);
+  const { error } = await sbClient.from('blog_posts').delete().eq('id', deleteTargetId);
   if (error) {
     alert('Delete failed: ' + error.message);
   } else {
@@ -1175,7 +1156,7 @@ function saveSettings() {
   const key = document.getElementById('cfg-sb-key').value.trim();
   if (url) sessionStorage.setItem('sb_url', url);
   if (key) sessionStorage.setItem('sb_key', key);
-  supabase = null;
+  sbClient = null;
   initSupabase();
   fetchPosts();
   alert('Settings saved. Supabase reconnected.');
