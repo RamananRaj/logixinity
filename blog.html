@@ -707,7 +707,7 @@
      SINGLE POST
   ============================================================ -->
 
-  function openPost(id) {
+  window.openPost = function(id) {
     const post = allPosts.find(p => p.id === id);
     if (!post) return;
     renderFullPost(post);
@@ -767,14 +767,13 @@
   }
 
   // Expose functions needed by inline handlers
-  window.openPost     = openPost;
   window.closePost    = closePost;
   window.filterByTag  = filterByTag;
 
   // Handle browser back button
   window.addEventListener('popstate', e => {
     if (e.state && e.state.postId) {
-      openPost(e.state.postId);
+      window.openPost(e.state.postId);
     } else {
       closePost();
     }
