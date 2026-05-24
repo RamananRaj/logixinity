@@ -663,7 +663,7 @@
       const date = p.publish_date ? fmtDate(p.publish_date) : null;
       const excerpt = buildExcerpt(p.content);
 
-      return `<article class="post-card" onclick="openPost('${p.id}')">
+      return `<article class="post-card" data-post-id="${p.id}">
         <div class="post-card-cover">
           ${p.cover_image
             ? `<img src="${escHtml(p.cover_image)}" alt="${escHtml(p.title)}" loading="lazy" />`
@@ -688,6 +688,13 @@
         </div>
       </article>`;
     }).join('');
+
+    // Event delegation — handles clicks on dynamically rendered cards
+    const grid = document.getElementById('postsGrid');
+    grid.onclick = (e) => {
+      const card = e.target.closest('[data-post-id]');
+      if (card) openPost(card.dataset.postId);
+    };
   }
 
   function renderNoPosts() {
@@ -759,6 +766,10 @@
     document.getElementById('postListWrap').classList.add('hidden');
     document.getElementById('postView').classList.add('active');
   }
+
+  // Expose functions needed by inline handlers
+  window.closePost    = closePost;
+  window.filterByTag  = filterByTag;
 
   // Handle browser back button
   window.addEventListener('popstate', e => {
