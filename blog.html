@@ -692,7 +692,7 @@
     // Event delegation — handles clicks on dynamically rendered cards
     grid.onclick = (e) => {
       const card = e.target.closest('[data-post-id]');
-      if (card) openPost(card.dataset.postId);
+      if (card) window.openPost(card.dataset.postId);
     };
   }
 
