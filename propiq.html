@@ -446,7 +446,9 @@
           .pq-sl-row { margin-bottom:18px; }
           .pq-sl-label { display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px; }
           .pq-sl-label span:first-child { font-size:13px;color:#666; }
-          .pq-sl-label span:last-child { font-size:15px;font-weight:500;color:#111; }
+          .pq-val-input { border:none;background:transparent;font-size:15px;font-weight:500;color:#111;text-align:right;width:150px;outline:none;cursor:pointer;border-bottom:1.5px dashed transparent;transition:border-color 0.15s,color 0.15s; }
+          .pq-val-input:hover { border-bottom-color:#C0C0B8; }
+          .pq-val-input:focus { cursor:text;border-bottom-color:#185FA5;color:#185FA5; }
           .pq-metrics { display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin:20px 0; }
           .pq-metric { background:#F7F7F4;border-radius:8px;padding:12px 14px; }
           .pq-metric-lbl { font-size:11px;color:#888;margin-bottom:4px; }
@@ -483,15 +485,27 @@
           </div>
 
           <div class="pq-sl-row">
-            <div class="pq-sl-label"><span>Loan amount</span><span id="pq-lbl-amount">$600,000</span></div>
-            <input type="range" id="pq-sl-amount" min="50000" max="2000000" step="1000" value="600000" oninput="pqUpdate()">
+            <div class="pq-sl-label">
+              <span>Loan amount</span>
+              <input type="text" id="pq-lbl-amount" value="$600,000" class="pq-val-input" title="Click to type exact amount"
+                onfocus="pqFocusVal(this,'amount')" onblur="pqBlurVal(this,'amount')" onkeydown="if(event.key==='Enter')this.blur()">
+            </div>
+            <input type="range" id="pq-sl-amount" min="50000" max="5000000" step="1000" value="600000" oninput="pqUpdate()">
           </div>
           <div class="pq-sl-row">
-            <div class="pq-sl-label"><span>Interest rate</span><span id="pq-lbl-rate">6.0%</span></div>
+            <div class="pq-sl-label">
+              <span>Interest rate</span>
+              <input type="text" id="pq-lbl-rate" value="6.0%" class="pq-val-input" title="Click to type exact rate"
+                onfocus="pqFocusVal(this,'rate')" onblur="pqBlurVal(this,'rate')" onkeydown="if(event.key==='Enter')this.blur()">
+            </div>
             <input type="range" id="pq-sl-rate" min="1" max="15" step="0.1" value="6" oninput="pqUpdate()">
           </div>
           <div class="pq-sl-row">
-            <div class="pq-sl-label"><span>Loan term</span><span id="pq-lbl-term">30 years</span></div>
+            <div class="pq-sl-label">
+              <span>Loan term</span>
+              <input type="text" id="pq-lbl-term" value="30 years" class="pq-val-input" title="Click to type years"
+                onfocus="pqFocusVal(this,'term')" onblur="pqBlurVal(this,'term')" onkeydown="if(event.key==='Enter')this.blur()">
+            </div>
             <input type="range" id="pq-sl-term" min="5" max="40" step="1" value="30" oninput="pqUpdate()">
           </div>
 
@@ -598,6 +612,29 @@
     (function() {
       let pqLch = null, pqDch = null, pqPer = 52;
 
+      window.pqFocusVal = function(input, field) {
+        if (field === 'amount') input.value = document.getElementById('pq-sl-amount').value;
+        else if (field === 'rate') input.value = document.getElementById('pq-sl-rate').value;
+        else if (field === 'term') input.value = document.getElementById('pq-sl-term').value;
+        input.select();
+      };
+
+      window.pqBlurVal = function(input, field) {
+        let v = parseFloat(input.value.replace(/[^0-9.]/g, ''));
+        if (isNaN(v)) { pqUpdate(); return; }
+        if (field === 'amount') {
+          v = Math.min(Math.max(Math.round(v / 1000) * 1000, 50000), 5000000);
+          document.getElementById('pq-sl-amount').value = v;
+        } else if (field === 'rate') {
+          v = Math.min(Math.max(parseFloat(v.toFixed(1)), 1), 15);
+          document.getElementById('pq-sl-rate').value = v;
+        } else if (field === 'term') {
+          v = Math.min(Math.max(Math.round(v), 5), 40);
+          document.getElementById('pq-sl-term').value = v;
+        }
+        pqUpdate();
+      };
+
       window.pqSetFreq = function(btn) {
         document.querySelectorAll('.pq-freq-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
@@ -632,9 +669,12 @@
         const yrs  = parseInt(document.getElementById('pq-sl-term').value);
         const ex   = parseFloat(document.getElementById('pq-extra').value) || 0;
 
-        document.getElementById('pq-lbl-amount').textContent = pqFmt(P);
-        document.getElementById('pq-lbl-rate').textContent   = rate.toFixed(1) + '%';
-        document.getElementById('pq-lbl-term').textContent   = yrs + ' year' + (yrs !== 1 ? 's' : '');
+        const amtEl = document.getElementById('pq-lbl-amount');
+        if (document.activeElement !== amtEl) amtEl.value = pqFmt(P);
+        const rateEl = document.getElementById('pq-lbl-rate');
+        if (document.activeElement !== rateEl) rateEl.value = rate.toFixed(1) + '%';
+        const termEl = document.getElementById('pq-lbl-term');
+        if (document.activeElement !== termEl) termEl.value = yrs + ' year' + (yrs !== 1 ? 's' : '');
 
         const fl = pqPer === 52 ? 'per week' : pqPer === 26 ? 'per fortnight' : 'per month';
         document.getElementById('pq-m-freq').textContent = fl;
