@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1300">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: linear-gradient(155deg, #08111f 0%, #0d1f38 45%, #081420 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px 40px;
+  position: relative;
+  overflow: hidden;
+}
+body::before {
+  content:'';
+  position:absolute;
+  width:900px; height:500px;
+  background: radial-gradient(ellipse, rgba(249,115,22,0.07) 0%, transparent 65%);
+  top:5%; left:50%; transform:translateX(-50%);
+  pointer-events:none;
+}
+body::after {
+  content:'';
+  position:absolute;
+  width:600px; height:600px;
+  background: radial-gradient(ellipse, rgba(59,130,246,0.05) 0%, transparent 70%);
+  bottom:-10%; right:-5%;
+  pointer-events:none;
+}
+
+/* HEADLINE */
+.headline {
+  text-align:center; margin-bottom:44px;
+  position:relative; z-index:2;
+  animation: rise 0.8s cubic-bezier(.22,.68,0,1.2) both;
+}
+.eyebrow { font-size:11px; font-weight:600; letter-spacing:.22em; color:#f97316; text-transform:uppercase; margin-bottom:12px; }
+.headline h1 { font-family:'Playfair Display', serif; font-size:46px; font-weight:800; color:#fff; line-height:1.1; margin-bottom:14px; }
+.headline h1 em { color:#f97316; font-style:normal; }
+.headline p { font-size:16px; color:#6b8aaa; max-width:500px; margin:0 auto; line-height:1.7; }
+
+@keyframes rise {
+  from { opacity:0; transform:translateY(24px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+
+/* MACBOOK */
+.macbook { position:relative; z-index:2; animation: rise 0.9s cubic-bezier(.22,.68,0,1.2) 0.12s both; perspective:2000px; }
+.mb-inner { transform:rotateX(2deg); transform-style:preserve-3d; }
+
+/* LID */
+.lid {
+  width:960px;
+  background: linear-gradient(178deg, #c8c8ca 0%, #adadaf 60%, #969698 100%);
+  border-radius:16px 16px 0 0;
+  padding:8px 8px 0;
+  position:relative;
+  box-shadow: 0 -1px 0 rgba(255,255,255,0.35) inset, 0 1px 0 rgba(0,0,0,0.2) inset;
+}
+.lid::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  background:linear-gradient(90deg, transparent 5%, rgba(255,255,255,0.55) 30%, rgba(255,255,255,0.65) 50%, rgba(255,255,255,0.55) 70%, transparent 95%);
+  border-radius:16px 16px 0 0;
+}
+.camera-row { height:12px; display:flex; align-items:center; justify-content:center; margin-bottom:4px; }
+.cam-dot { width:6px; height:6px; background:#3a3a3c; border-radius:50%; box-shadow:0 0 0 1px rgba(0,0,0,0.3); }
+
+.bezel {
+  background:#0e0e0f; border-radius:6px 6px 0 0; padding:4px 4px 0;
+  position:relative; overflow:hidden;
+}
+.bezel::after {
+  content:''; position:absolute; top:0; left:0; right:0; bottom:0;
+  background:linear-gradient(130deg, rgba(255,255,255,0.03) 0%, transparent 55%);
+  pointer-events:none; z-index:5;
+}
+
+.screen { width:100%; height:530px; border-radius:4px 4px 0 0; overflow:hidden; background:#f0f4f8; position:relative; }
+
+/* Animated slide between two screens */
+.screen-slides { display:flex; width:200%; height:100%; animation: slideShow 10s ease-in-out infinite; }
+@keyframes slideShow {
+  0%   { transform:translateX(0); }
+  42%  { transform:translateX(0); }
+  48%  { transform:translateX(-50%); }
+  90%  { transform:translateX(-50%); }
+  96%  { transform:translateX(0); }
+  100% { transform:translateX(0); }
+}
+.screen-slide { width:50%; height:100%; flex-shrink:0; overflow:hidden; }
+
+/* Slide indicator dots */
+.slide-dots {
+  position:absolute; bottom:6px; left:50%; transform:translateX(-50%);
+  display:flex; gap:5px; z-index:10;
+}
+.slide-dot {
+  width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.3);
+}
+.slide-dot.d1 { animation: dot1 10s ease-in-out infinite; }
+.slide-dot.d2 { animation: dot2 10s ease-in-out infinite; }
+@keyframes dot1 { 0%,42%,96%,100%{background:rgba(255,255,255,0.8);} 48%,90%{background:rgba(255,255,255,0.25);} }
+@keyframes dot2 { 0%,42%,96%,100%{background:rgba(255,255,255,0.25);} 48%,90%{background:rgba(255,255,255,0.8);} }
+
+/* HINGE */
+.hinge { width:960px; height:4px; background:linear-gradient(180deg, #505052 0%, #6e6e70 50%, #888 100%); position:relative; }
+.hinge::after { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:rgba(0,0,0,0.5); }
+
+/* BASE */
+.base {
+  width:960px;
+  clip-path:polygon(0 0, 100% 0, 97% 100%, 3% 100%);
+  height:22px;
+  background:linear-gradient(180deg, #b8b8ba 0%, #d0d0d2 30%, #c4c4c6 70%, #b0b0b2 100%);
+  position:relative;
+}
+.base::before { content:''; position:absolute; top:0; left:2%; right:2%; height:2px; background:linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent); }
+.trackpad { position:absolute; top:5px; left:50%; transform:translateX(-50%); width:210px; height:13px; background:linear-gradient(180deg, #a0a0a2 0%, #b8b8ba 100%); border-radius:4px; border:1px solid rgba(0,0,0,0.12); box-shadow:0 1px 2px rgba(0,0,0,0.1) inset; }
+.front-edge { width:932px; margin:0 auto; height:3px; background:linear-gradient(180deg, #888 0%, #aaa 100%); border-radius:0 0 4px 4px; }
+.shadow-blur { width:860px; height:24px; margin:0 auto; background:radial-gradient(ellipse at center, rgba(0,0,0,0.55) 0%, transparent 75%); margin-top:-2px; }
+
+/* ══════════════════════════════════════════
+   SCREEN 1 — HOME DASHBOARD (mini)
+══════════════════════════════════════════ */
+.mini { width:100%; height:100%; font-family:'DM Sans', sans-serif; display:flex; flex-direction:column; font-size:9px; }
+.mn-nav { background:#1a2e4a; display:flex; align-items:center; justify-content:space-between; padding:0 14px; height:28px; flex-shrink:0; }
+.mn-nav-l { display:flex; align-items:center; gap:7px; }
+.mn-logo { width:18px; height:18px; background:#f97316; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:9px; }
+.mn-title { color:#fff; font-weight:600; font-size:10px; }
+.mn-nav-r { display:flex; align-items:center; gap:9px; color:#94a3b8; font-size:8px; }
+.mn-av { width:18px; height:18px; background:#f97316; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:6px; }
+.mn-body { display:flex; flex:1; overflow:hidden; }
+.mn-side { width:28px; background:#1a2e4a; display:flex; flex-direction:column; align-items:center; padding:8px 0; gap:5px; }
+.mn-si { width:18px; height:18px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8; }
+.mn-si.on { background:#f97316; color:#fff; }
+.mn-main { flex:1; padding:12px; overflow:hidden; background:#f0f4f8; }
+.mn-ann { background:#fff; border-left:3px solid #f97316; border-radius:5px; padding:6px 9px; margin-bottom:10px; font-size:7.5px; color:#475569; line-height:1.5; }
+.mn-ann-top { display:flex; align-items:center; gap:7px; margin-bottom:3px; }
+.mn-ann-label { font-weight:700; color:#f97316; font-size:7px; letter-spacing:.05em; }
+.mn-ann-date { font-size:6.5px; color:#94a3b8; }
+.mn-greet { margin-bottom:10px; }
+.mn-greet h2 { font-family:'Playfair Display', serif; font-size:15px; font-weight:700; color:#1a2e4a; }
+.mn-greet p { font-size:7.5px; color:#64748b; margin-top:2px; }
+.mn-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:7px; }
+.mn-card { background:#fff; border-radius:7px; padding:9px; border-top:2.5px solid transparent; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.mn-card:nth-child(1){border-top-color:#3b82f6;}
+.mn-card:nth-child(2){border-top-color:#10b981;}
+.mn-card:nth-child(3){border-top-color:#8b5cf6;}
+.mn-card:nth-child(4){border-top-color:#94a3b8;opacity:.78;}
+.mn-card:nth-child(5){border-top-color:#f43f5e;opacity:.78;}
+.mn-card:nth-child(6){border-top-color:#f59e0b;}
+.mn-ci { font-size:11px; margin-bottom:5px; }
+.mn-card h4 { font-size:8px; font-weight:700; color:#1e293b; margin-bottom:2px; }
+.mn-card p { font-size:6.5px; color:#94a3b8; line-height:1.4; margin-bottom:5px; }
+.mn-div { border:none; border-top:1px solid #f1f5f9; margin-bottom:5px; }
+.mn-stat { font-size:10px; font-weight:700; color:#1e293b; }
+.mn-sl { font-size:6px; color:#94a3b8; }
+.mn-cs { font-size:6.5px; color:#94a3b8; background:#f8fafc; padding:2px 6px; border-radius:3px; border:1px solid #e2e8f0; }
+
+/* ══════════════════════════════════════════
+   SCREEN 2 — PROPERTY DETAIL
+══════════════════════════════════════════ */
+.pd { width:100%; height:100%; font-family:'DM Sans', sans-serif; font-size:9px; display:flex; flex-direction:column; background:#f0f4f8; }
+.pd-nav { background:#1a2e4a; display:flex; align-items:center; justify-content:space-between; padding:0 14px; height:28px; flex-shrink:0; }
+.pd-nav-l { display:flex; align-items:center; gap:7px; }
+.pd-logo { width:18px; height:18px; background:#f97316; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:9px; }
+.pd-nt { color:#fff; font-weight:600; font-size:10px; }
+.pd-nav-r { display:flex; align-items:center; gap:9px; color:#94a3b8; font-size:8px; }
+.pd-av { width:18px; height:18px; background:#f97316; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; font-size:6px; }
+
+.pd-body { display:flex; flex:1; overflow:hidden; }
+.pd-side { width:28px; background:#1a2e4a; display:flex; flex-direction:column; align-items:center; padding:8px 0; gap:5px; }
+.pd-si { width:18px; height:18px; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:9px; color:#94a3b8; }
+.pd-si.on { background:#f97316; color:#fff; }
+
+.pd-main { flex:1; overflow:hidden; display:flex; flex-direction:column; }
+
+/* Hero */
+.pd-hero {
+  background:linear-gradient(135deg, #1a2e4a 0%, #1e3a5f 100%);
+  padding:10px 14px 10px; flex-shrink:0;
+}
+.pd-hero-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.pd-address { font-size:13px; font-weight:700; color:#fff; }
+.pd-sub { font-size:7px; color:#7a9abc; margin-top:1px; }
+.pd-edit { background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#fff; font-size:6.5px; padding:3px 8px; border-radius:4px; }
+.pd-kpis { display:flex; gap:20px; }
+.pd-kpi-lbl { font-size:6px; color:#7a9abc; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+.pd-kpi-val { font-size:11px; font-weight:700; color:#fff; margin-top:1px; }
+.pd-kpi-val.green { color:#34d399; }
+
+/* Panels grid */
+.pd-panels { display:grid; grid-template-columns:1fr 1fr; gap:6px; padding:8px; flex:1; overflow:hidden; }
+.pd-panel { background:#fff; border-radius:6px; padding:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06); overflow:hidden; }
+.pd-panel-title { font-size:6.5px; font-weight:700; color:#1a2e4a; letter-spacing:.07em; text-transform:uppercase; margin-bottom:6px; padding-bottom:4px; border-bottom:1px solid #f1f5f9; }
+.pd-chips { display:flex; gap:3px; flex-wrap:wrap; margin-bottom:6px; }
+.pd-chip { font-size:6px; background:#f0f4f8; color:#475569; padding:2px 5px; border-radius:8px; border:1px solid #e2e8f0; }
+.pd-row { display:flex; justify-content:space-between; align-items:center; padding:2.5px 0; border-bottom:1px solid #f8fafc; }
+.pd-row:last-child { border-bottom:none; }
+.pd-rl { font-size:6.5px; color:#64748b; }
+.pd-rv { font-size:7px; font-weight:600; color:#1e293b; }
+.pd-rv.green { color:#10b981; }
+.pd-rv.blue { color:#3b82f6; }
+.pd-rv.orange { color:#f97316; }
+.pd-rv.bold { font-weight:700; }
+
+/* Income table row */
+.pd-table { flex-shrink:0; background:#fff; border-radius:6px; margin:0 8px 8px; padding:7px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+.pd-tabs { display:flex; gap:3px; margin-bottom:5px; }
+.pd-tab { font-size:7px; padding:2px 8px; border-radius:3px; color:#64748b; cursor:pointer; }
+.pd-tab.act { background:#1a2e4a; color:#fff; font-weight:600; }
+.pd-tbl { width:100%; border-collapse:collapse; }
+.pd-tbl th { font-size:6px; color:#94a3b8; text-align:left; padding:2px 4px; border-bottom:1px solid #f1f5f9; font-weight:600; letter-spacing:.04em; }
+.pd-tbl td { font-size:6.5px; color:#475569; padding:3px 4px; border-bottom:1px solid #f8fafc; }
+.pd-tbl td.g { color:#10b981; font-weight:700; }
+
+/* BELOW LAPTOP */
+.below { display:flex; flex-direction:column; align-items:center; margin-top:32px; gap:22px; position:relative; z-index:2; animation: rise 0.9s cubic-bezier(.22,.68,0,1.2) 0.25s both; }
+.stats-row { display:flex; gap:52px; align-items:center; }
+.stat-item { text-align:center; }
+.snum { font-size:26px; font-weight:700; color:#fff; }
+.slbl { font-size:11px; color:#4a6a8a; margin-top:2px; letter-spacing:.02em; }
+.sdiv { width:1px; height:38px; background:#162840; }
+.cta-btn { background:#f97316; color:#fff; font-family:'DM Sans', sans-serif; font-weight:700; font-size:15px; padding:15px 44px; border-radius:50px; border:none; cursor:pointer; letter-spacing:.02em; box-shadow:0 10px 30px rgba(249,115,22,0.4); transition:transform .2s, box-shadow .2s; }
+.cta-btn:hover { transform:translateY(-2px); box-shadow:0 14px 40px rgba(249,115,22,0.5); }
+</style>
+</head>
+<body>
+
+<!-- Headline -->
+<div class="headline">
+  <div class="eyebrow">Property Intelligence Platform</div>
+  <h1>Manage Smarter.<br><em>Grow Faster.</em></h1>
+  <p>Everything John Citizen needs to track, grow and optimise his property portfolio — all in one beautiful place.</p>
+</div>
+
+<!-- MacBook -->
+<div class="macbook">
+<div class="mb-inner">
+
+  <div class="lid">
+    <div class="camera-row"><div class="cam-dot"></div></div>
+    <div class="bezel">
+      <div class="screen">
+
+        <!-- Animated slide dots -->
+        <div class="slide-dots">
+          <div class="slide-dot d1"></div>
+          <div class="slide-dot d2"></div>
+        </div>
+
+        <div class="screen-slides">
+
+          <!-- ── SLIDE 1: HOME DASHBOARD ── -->
+          <div class="screen-slide">
+            <div class="mini">
+              <div class="mn-nav">
+                <div class="mn-nav-l"><div class="mn-logo">🏠</div><span class="mn-title">Home</span></div>
+                <div class="mn-nav-r"><span>❓</span><span>🔔</span><span>John Citizen</span><div class="mn-av">JC</div></div>
+              </div>
+              <div class="mn-body">
+                <div class="mn-side">
+                  <div class="mn-si on">⊞</div><div class="mn-si">🏠</div><div class="mn-si">📊</div>
+                  <div class="mn-si">👥</div><div class="mn-si">📄</div><div class="mn-si">👤</div>
+                  <div class="mn-si">🛡</div><div class="mn-si">💳</div>
+                </div>
+                <div class="mn-main">
+                  <div class="mn-ann">
+                    <div class="mn-ann-top"><span class="mn-ann-label">ANNOUNCEMENT</span><span class="mn-ann-date">17 May 2026 · 2 of 2</span></div>
+                    RBA has increased the interest rate by 0.25% for the Month of May. Average Household will now pay additional $234.50 for a P&amp;I loan of $500,000.00 every month.
+                  </div>
+                  <div class="mn-greet"><h2>Good afternoon, John!</h2><p>Your Launchpad — select a feature to get started.</p></div>
+                  <div class="mn-grid">
+                    <div class="mn-card"><div class="mn-ci">🏠</div><h4>Property Management</h4><p>Track portfolio value, equity, cashflow and manage your properties.</p><hr class="mn-div"><span class="mn-stat">$6,300,000.00</span><br><span class="mn-sl">portfolio value</span></div>
+                    <div class="mn-card"><div class="mn-ci">👥</div><h4>Tenancy Management</h4><p>Manage leases, tenants and maintenance requests across your portfolio.</p><hr class="mn-div"><span class="mn-stat">6</span><br><span class="mn-sl">properties tracked</span></div>
+                    <div class="mn-card"><div class="mn-ci">📊</div><h4>Tax &amp; Reports</h4><p>Review rental income, expenses and generate tax summary reports.</p><hr class="mn-div"><span class="mn-stat">$179,140.00</span><br><span class="mn-sl">annual income</span></div>
+                    <div class="mn-card"><div class="mn-ci">💳</div><h4>Budget Management</h4><p>Plan and track budgets across all your properties and financial goals.</p><hr class="mn-div"><span class="mn-cs">Coming Soon</span></div>
+                    <div class="mn-card"><div class="mn-ci">📈</div><h4>Debt Elimination Plan</h4><p>Build a structured plan to pay down debt faster and reduce interest costs.</p><hr class="mn-div"><span class="mn-cs">Coming Soon</span></div>
+                    <div class="mn-card"><div class="mn-ci">📰</div><h4>News &amp; Updates</h4><p>Stay informed with the latest property market news and platform updates.</p><hr class="mn-div"><span class="mn-stat">3</span><br><span class="mn-sl">articles published</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /SLIDE 1 -->
+
+          <!-- ── SLIDE 2: PROPERTY DETAIL ── -->
+          <div class="screen-slide">
+            <div class="pd">
+              <!-- Nav -->
+              <div class="pd-nav">
+                <div class="pd-nav-l"><div class="pd-logo">🏠</div><span class="pd-nt">Property Management</span></div>
+                <div class="pd-nav-r"><span>❓</span><span>🔔</span><span>John Citizen</span><div class="pd-av">JC</div></div>
+              </div>
+
+              <div class="pd-body">
+                <div class="pd-side">
+                  <div class="pd-si">⊞</div><div class="pd-si on">🏠</div><div class="pd-si">📊</div>
+                  <div class="pd-si">👥</div><div class="pd-si">📄</div><div class="pd-si">👤</div>
+                  <div class="pd-si">🛡</div><div class="pd-si">💳</div>
+                </div>
+
+                <div class="pd-main">
+                  <!-- Hero header -->
+                  <div class="pd-hero">
+                    <div class="pd-hero-top">
+                      <div>
+                        <div class="pd-address">42 Harbour View Crescent</div>
+                        <div class="pd-sub">Brighton, VIC · Investment Property</div>
+                      </div>
+                      <div class="pd-edit">✏ Edit</div>
+                    </div>
+                    <div class="pd-kpis">
+                      <div><div class="pd-kpi-lbl">CURRENT VALUE</div><div class="pd-kpi-val">$1,850,000.00</div></div>
+                      <div><div class="pd-kpi-lbl">TOTAL EQUITY</div><div class="pd-kpi-val green">$920,000.00</div></div>
+                      <div><div class="pd-kpi-lbl">LVR</div><div class="pd-kpi-val">49.7%</div></div>
+                      <div><div class="pd-kpi-lbl">GROSS YIELD</div><div class="pd-kpi-val green">5.8%</div></div>
+                    </div>
+                  </div>
+
+                  <!-- 4 panels -->
+                  <div class="pd-panels">
+
+                    <!-- Property Info -->
+                    <div class="pd-panel">
+                      <div class="pd-panel-title">Property Info</div>
+                      <div class="pd-chips">
+                        <span class="pd-chip">🛏 5 Bedrooms</span>
+                        <span class="pd-chip">🚿 3 Bathrooms</span>
+                        <span class="pd-chip">🚗 2 Car Spaces</span>
+                        <span class="pd-chip">📐 620 m² Land</span>
+                      </div>
+                      <div class="pd-row"><span class="pd-rl">Purchase Price</span><span class="pd-rv">$980,000.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Purchase Date</span><span class="pd-rv">2021-06-15</span></div>
+                      <div class="pd-row"><span class="pd-rl">Capital Growth</span><span class="pd-rv green">+88.8%</span></div>
+                    </div>
+
+                    <!-- Mortgage -->
+                    <div class="pd-panel">
+                      <div class="pd-panel-title">Mortgage</div>
+                      <div class="pd-row"><span class="pd-rl">Loan Balance</span><span class="pd-rv">$930,000.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Interest Rate</span><span class="pd-rv">5.8%</span></div>
+                      <div class="pd-row"><span class="pd-rl">Monthly Repayment</span><span class="pd-rv">$5,480.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Loan Type</span><span class="pd-rv bold">Principal &amp; Interest</span></div>
+                      <div class="pd-row"><span class="pd-rl">Lender</span><span class="pd-rv bold">CBA</span></div>
+                    </div>
+
+                    <!-- Rental Income -->
+                    <div class="pd-panel">
+                      <div class="pd-panel-title">Rental Income</div>
+                      <div class="pd-row"><span class="pd-rl">Weekly Rent</span><span class="pd-rv green">$2,060.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Annual Rental</span><span class="pd-rv green">$107,120.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Tenant</span><span class="pd-rv bold">John Citizen</span></div>
+                      <div class="pd-row"><span class="pd-rl">Net Yield</span><span class="pd-rv green">5.4%</span></div>
+                    </div>
+
+                    <!-- Annual Expenses & Cashflow -->
+                    <div class="pd-panel">
+                      <div class="pd-panel-title">Annual Expenses &amp; Cashflow</div>
+                      <div class="pd-row"><span class="pd-rl">Rates and Taxes</span><span class="pd-rv">$4,200.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Insurance</span><span class="pd-rv">$1,800.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Total Expenses</span><span class="pd-rv bold">$6,000.00</span></div>
+                      <div class="pd-row"><span class="pd-rl">Net Annual Cashflow</span><span class="pd-rv green bold">$+ 35,480.00</span></div>
+                    </div>
+
+                  </div>
+
+                  <!-- Income table -->
+                  <div class="pd-table">
+                    <div class="pd-tabs">
+                      <span class="pd-tab act">💰 Income</span>
+                      <span class="pd-tab">📋 Expenses</span>
+                      <span class="pd-tab">👥 Ownership</span>
+                    </div>
+                    <table class="pd-tbl">
+                      <tr><th>DATE</th><th>TYPE</th><th>DESCRIPTION</th><th>AMOUNT</th></tr>
+                      <tr><td>20 Apr 2026</td><td>Income</td><td>April Rent</td><td class="g">$8,240.00</td></tr>
+                      <tr><td>20 Mar 2026</td><td>Income</td><td>March Rent</td><td class="g">$8,240.00</td></tr>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /SLIDE 2 -->
+
+        </div><!-- /screen-slides -->
+      </div><!-- /screen -->
+    </div><!-- /bezel -->
+  </div><!-- /lid -->
+
+  <div class="hinge"></div>
+  <div class="base"><div class="trackpad"></div></div>
+  <div class="front-edge"></div>
+
+</div>
+</div>
+
+<div class="shadow-blur"></div>
+
+<!-- Stats + CTA -->
+<div class="below">
+  <div class="stats-row">
+    <div class="stat-item"><div class="snum">$6.3M</div><div class="slbl">Portfolio Value</div></div>
+    <div class="sdiv"></div>
+    <div class="stat-item"><div class="snum">6</div><div class="slbl">Properties Tracked</div></div>
+    <div class="sdiv"></div>
+    <div class="stat-item"><div class="snum">$179K</div><div class="slbl">Annual Income</div></div>
+  </div>
+  <button class="cta-btn">Start Managing Your Portfolio →</button>
+</div>
+
+</body>
+</html>
