@@ -232,6 +232,26 @@
           <p>Chat directly with your connected advisor inside the app. Ask questions about your portfolio, get feedback on decisions, and stay aligned — all in one place, powered by PropIQ.</p>
         </div>
 
+        <div class="pq-feature-card">
+          <div class="pq-feature-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="15" x2="10" y2="15"/><line x1="14" y1="15" x2="18" y2="15"/>
+            </svg>
+          </div>
+          <h3>Bills &amp; Obligations</h3>
+          <p>Track every recurring bill across your portfolio — water, council rates, land tax, insurance, strata. Auto-generates payment schedules, flags overdue and upcoming payments, and sends personalised reminders so nothing slips through the cracks.</p>
+        </div>
+
+        <div class="pq-feature-card">
+          <div class="pq-feature-icon">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z"/>
+            </svg>
+          </div>
+          <h3>Land tax calculator</h3>
+          <p>Estimate your annual land tax liability for any Australian state or territory. Enter a land value for single-property planning, or load your entire portfolio to see state-by-state aggregated land tax exposure at a glance.</p>
+        </div>
+
       </div>
     </div>
   </section>
@@ -328,7 +348,9 @@
             <li><span class="check-icon on">✓</span> Tenancy management</li>
             <li><span class="check-icon on">✓</span> LVR &amp; equity tracking</li>
             <li><span class="check-icon on">✓</span> Maintenance log</li>
+            <li><span class="check-icon on">✓</span> Bills &amp; payment tracking</li>
             <li><span class="check-icon on">✓</span> Loan repayment calculator</li>
+            <li class="dim"><span class="check-icon off">–</span> Portfolio bills view</li>
             <li class="dim"><span class="check-icon off">–</span> Tax reports</li>
             <li class="dim"><span class="check-icon off">–</span> Advisor access</li>
           </ul>
@@ -352,6 +374,7 @@
           <ul class="price-features">
             <li><span class="check-icon on">✓</span> Up to 10 properties</li>
             <li><span class="check-icon on">✓</span> Everything in Free</li>
+            <li><span class="check-icon on">✓</span> Portfolio bills view &amp; provision tracking</li>
             <li><span class="check-icon on">✓</span> Tax reports (PDF, email, CSV)</li>
             <li><span class="check-icon on">✓</span> Advisor access</li>
             <li><span class="check-icon on">✓</span> Live chat with Advisor</li>
@@ -408,8 +431,8 @@
       <div class="section-label">Tools</div>
       <h2 class="section-title">Free tools for property investors.</h2>
       <p class="section-sub">
-        Free tools to help you plan every purchase. Model your loan repayments, estimate stamp duty
-        for any Australian state, or visualise your portfolio equity — all in one place.
+        Free tools to help you plan every purchase. Model your loan repayments, estimate stamp duty,
+        calculate land tax across all Australian states, or visualise your portfolio equity — all in one place.
       </p>
 
       <!-- Tool tab switcher -->
@@ -426,6 +449,10 @@
           <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13.5a9 9 0 1 0 18 0 9 9 0 0 0-18 0zm9-4.5v9m-4.5-4.5h9"/></svg>
           Equity
           <span style="font-size:10px;background:#FFF0C2;color:#A86300;border-radius:99px;padding:1px 7px;font-weight:600;margin-left:2px;">Investor+</span>
+        </button>
+        <button class="pq-tool-tab" data-tool="landtax" onclick="pqSwitchTool('landtax')" style="display:inline-flex;align-items:center;gap:6px;background:transparent;border:1px solid #D0D0C8;color:#666;font-size:13px;font-weight:400;padding:7px 18px;border-radius:99px;cursor:pointer;transition:all 0.15s;">
+          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z"/></svg>
+          Land Tax
         </button>
         <span style="display:inline-flex;align-items:center;gap:6px;background:#F1FEF8;border:1px solid #9FE1CB;color:#0F6E56;font-size:12px;font-weight:500;padding:6px 14px;border-radius:99px;">Free for everyone</span>
       </div>
@@ -762,6 +789,78 @@
         </div>
       </div><!-- /pq-tool-equity -->
 
+      <!-- LAND TAX CALCULATOR -->
+      <div id="pq-tool-landtax" style="display:none;">
+        <div style="background:#fff;border:0.5px solid #E0E0DA;border-radius:16px;padding:28px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+
+            <!-- Inputs -->
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#181818;margin-bottom:18px;">Land Tax Estimator</div>
+              <div style="margin-bottom:14px;">
+                <label style="display:block;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">State / Territory</label>
+                <select id="lt-state" onchange="ltCalcUpdate()" style="width:100%;border:1px solid #D0D0C8;border-radius:8px;padding:9px 12px;font-size:14px;background:#fff;outline:none;color:#181818;">
+                  <option value="NSW">New South Wales</option>
+                  <option value="VIC">Victoria</option>
+                  <option value="QLD">Queensland</option>
+                  <option value="WA">Western Australia</option>
+                  <option value="SA">South Australia</option>
+                  <option value="TAS">Tasmania</option>
+                  <option value="ACT">Australian Capital Territory</option>
+                  <option value="NT">Northern Territory</option>
+                </select>
+              </div>
+              <div style="margin-bottom:20px;">
+                <label style="display:block;font-size:11px;font-weight:600;color:#666;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;">Unimproved Land Value ($)</label>
+                <input id="lt-value" type="number" oninput="ltCalcUpdate()" placeholder="e.g. 800000" value="800000"
+                  style="width:100%;border:1px solid #D0D0C8;border-radius:8px;padding:9px 12px;font-size:14px;background:#fff;outline:none;color:#181818;box-sizing:border-box;" />
+              </div>
+              <div id="lt-note" style="font-size:12px;color:#888;line-height:1.5;padding:10px 14px;background:#F9FAFB;border-radius:8px;border:1px solid #E5E7EB;"></div>
+            </div>
+
+            <!-- Results -->
+            <div>
+              <div style="font-size:15px;font-weight:700;color:#181818;margin-bottom:18px;">Estimated Liability</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+                <div style="background:#F3F4F6;border-radius:10px;padding:14px 16px;">
+                  <div style="font-size:11px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Annual Tax</div>
+                  <div id="lt-annual" style="font-size:22px;font-weight:800;color:#111827;">—</div>
+                </div>
+                <div style="background:#F3F4F6;border-radius:10px;padding:14px 16px;">
+                  <div style="font-size:11px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Effective Rate</div>
+                  <div id="lt-rate" style="font-size:22px;font-weight:800;color:#111827;">—</div>
+                </div>
+                <div style="background:#F3F4F6;border-radius:10px;padding:14px 16px;">
+                  <div style="font-size:11px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Monthly Equiv.</div>
+                  <div id="lt-monthly" style="font-size:22px;font-weight:800;color:#0176D3;">—</div>
+                </div>
+                <div style="background:#F3F4F6;border-radius:10px;padding:14px 16px;">
+                  <div style="font-size:11px;color:#9CA3AF;font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px;">Tax-free threshold</div>
+                  <div id="lt-threshold" style="font-size:18px;font-weight:700;color:#374151;">—</div>
+                </div>
+              </div>
+              <!-- Bracket breakdown -->
+              <div id="lt-brackets" style="font-size:12px;color:#6B7280;line-height:1.8;padding:10px 14px;background:#F9FAFB;border-radius:8px;border:1px solid #E5E7EB;"></div>
+            </div>
+
+          </div>
+
+          <!-- Investor+ teaser -->
+          <div style="margin-top:20px;padding:14px 18px;background:linear-gradient(135deg,#EBF4FF,#F0F9FF);border:1px solid #BFDBFE;border-radius:10px;display:flex;align-items:center;gap:14px;">
+            <span style="font-size:20px;">✦</span>
+            <div>
+              <div style="font-size:13px;font-weight:600;color:#185FA5;">Investor plan — portfolio land tax</div>
+              <div style="font-size:12px;color:#374151;margin-top:2px;">On the Investor plan, open this calculator inside your Propiq account to aggregate land tax liability across your entire portfolio — grouped by state, with totals.</div>
+            </div>
+            <a href="https://ramananraj.github.io/Wealth-Management-app/property-tracker.html" style="flex-shrink:0;padding:8px 16px;background:#185FA5;color:#fff;border-radius:8px;font-size:12px;font-weight:600;text-decoration:none;">Try Propiq free →</a>
+          </div>
+
+          <div style="margin-top:10px;font-size:11px;color:#9E9D9A;">
+            Indicative estimates only — land tax rates, thresholds, and surcharges change regularly. Always confirm with a qualified tax adviser or state revenue office before making decisions.
+          </div>
+        </div>
+      </div><!-- /pq-tool-landtax -->
+
     </div>
   </section>
 
@@ -1063,9 +1162,10 @@
       };
 
       window.pqSwitchTool = function(tool) {
-        document.getElementById('pq-tool-loan').style.display   = tool==='loan'   ? '' : 'none';
-        document.getElementById('pq-tool-stamp').style.display  = tool==='stamp'  ? '' : 'none';
-        document.getElementById('pq-tool-equity').style.display = tool==='equity' ? '' : 'none';
+        document.getElementById('pq-tool-loan').style.display    = tool==='loan'    ? '' : 'none';
+        document.getElementById('pq-tool-stamp').style.display   = tool==='stamp'   ? '' : 'none';
+        document.getElementById('pq-tool-equity').style.display  = tool==='equity'  ? '' : 'none';
+        document.getElementById('pq-tool-landtax').style.display = tool==='landtax' ? '' : 'none';
         document.querySelectorAll('.pq-tool-tab').forEach(t => {
           const on = t.dataset.tool === tool;
           t.style.background  = on ? '#EBF4FF'   : 'transparent';
@@ -1074,7 +1174,178 @@
           t.style.fontWeight  = on ? '500'       : '400';
           t.style.borderWidth = on ? '1.5px'     : '1px';
         });
-        if (tool==='stamp') sdUpdate();
+        if (tool==='stamp')   sdUpdate();
+        if (tool==='landtax') ltCalcUpdate();
+      };
+
+      // ── Land Tax Calculator ───────────────────────────────────────────────────
+      window.ltCalcUpdate = function() {
+        const state = document.getElementById('lt-state').value;
+        const v     = parseFloat(document.getElementById('lt-value').value) || 0;
+
+        const fmt$  = n => '$' + Math.round(n).toLocaleString('en-AU');
+
+        const LT = {
+          NSW: {
+            threshold: 1075000,
+            note: 'Threshold $1,075,000 (2024–25). Primary residences exempt. Foreign person surcharge: +2% on taxable value.',
+            brackets: [
+              [0,       1075000,  0,      0      ],
+              [1075000, 6571000,  100,    0.016  ],
+              [6571000, Infinity, 88036,  0.020  ],
+            ],
+          },
+          VIC: {
+            threshold: 300000,
+            note: 'Threshold $300,000. $300k–$600k: 0.20% on full value. Above $600k: marginal rate applies. Primary residences exempt. Trust surcharges may apply.',
+            special: 'vic',
+          },
+          QLD: {
+            threshold: 600000,
+            note: 'Threshold $600,000. Owner-occupied homes exempt. Land assessed at 30 June each year.',
+            brackets: [
+              [0,       600000,   0,      0      ],
+              [600000,  1000000,  500,    0.010  ],
+              [1000000, 3000000,  4500,   0.0165 ],
+              [3000000, 5000000,  37500,  0.0125 ],
+              [5000000, Infinity, 62500,  0.0175 ],
+            ],
+          },
+          WA: {
+            threshold: 300000,
+            note: 'Threshold $300,000. $300k–$420k: 0.15% on full taxable value. Above $420k: marginal rates apply. Primary residences exempt.',
+            special: 'wa',
+          },
+          SA: {
+            threshold: 534000,
+            note: 'Threshold ~$534,000 (general rate; varies for trusts). Primary residences exempt. Assessed on 30 June.',
+            brackets: [
+              [0,       534000,   0,      0      ],
+              [534000,  723000,   0,      0.005  ],
+              [723000,  1012000,  945,    0.010  ],
+              [1012000, 1350000,  3835,   0.0175 ],
+              [1350000, 2537000,  9750,   0.024  ],
+              [2537000, Infinity, 38238,  0.037  ],
+            ],
+          },
+          TAS: {
+            threshold: 25000,
+            note: 'Low threshold of $25,000. Applies to investment properties; primary residences and primary production land may be exempt.',
+            brackets: [
+              [0,       25000,    0,      0      ],
+              [25000,   349999,   50,     0.0055 ],
+              [350000,  749999,   1837,   0.0097 ],
+              [750000,  1499999,  5717,   0.0167 ],
+              [1500000, Infinity, 18267,  0.024  ],
+            ],
+          },
+          ACT: {
+            threshold: null,
+            note: 'ACT levies land tax on residential properties rented or not used as a primary residence, based on Average Unimproved Value (AUV) and a fixed charge. Consult the ACT Revenue Office for your specific rate.',
+            special: 'act',
+          },
+          NT: {
+            threshold: null,
+            note: 'The Northern Territory does not levy land tax. No liability applies.',
+            special: 'nt',
+          },
+        };
+
+        const data = LT[state];
+        let annual = 0, bracketHtml = '';
+
+        if (data.special === 'nt') {
+          document.getElementById('lt-annual').textContent    = '$0';
+          document.getElementById('lt-rate').textContent      = '0%';
+          document.getElementById('lt-monthly').textContent   = '$0/mo';
+          document.getElementById('lt-threshold').textContent = 'N/A';
+          document.getElementById('lt-brackets').innerHTML    = '<em>No land tax in the Northern Territory.</em>';
+          document.getElementById('lt-note').textContent      = data.note;
+          return;
+        }
+
+        if (data.special === 'act') {
+          document.getElementById('lt-annual').textContent    = '—';
+          document.getElementById('lt-rate').textContent      = '—';
+          document.getElementById('lt-monthly').textContent   = '—';
+          document.getElementById('lt-threshold').textContent = 'AUV-based';
+          document.getElementById('lt-brackets').innerHTML    = '<em>ACT rates are AUV-based and vary by property type. Contact the ACT Revenue Office.</em>';
+          document.getElementById('lt-note').textContent      = data.note;
+          return;
+        }
+
+        if (data.special === 'vic') {
+          // First bracket ($300k–$600k) charges 0.20% on the full taxable value
+          if (v <= 300000) {
+            annual = 0; bracketHtml = '<strong>Below $300,000 threshold.</strong> No land tax payable.';
+          } else if (v <= 600000) {
+            annual = v * 0.002;
+            bracketHtml = `0.20% × ${fmt$(v)} (full value) = ${fmt$(annual)}`;
+          } else if (v <= 1000000) {
+            annual = 1200 + (v - 600000) * 0.005;
+            bracketHtml = `$1,200 base + 0.50% × ${fmt$(v - 600000)} excess over $600,000`;
+          } else if (v <= 1800000) {
+            annual = 3200 + (v - 1000000) * 0.008;
+            bracketHtml = `$3,200 base + 0.80% × ${fmt$(v - 1000000)} excess over $1,000,000`;
+          } else if (v <= 3000000) {
+            annual = 9600 + (v - 1800000) * 0.013;
+            bracketHtml = `$9,600 base + 1.30% × ${fmt$(v - 1800000)} excess over $1,800,000`;
+          } else {
+            annual = 25200 + (v - 3000000) * 0.0225;
+            bracketHtml = `$25,200 base + 2.25% × ${fmt$(v - 3000000)} excess over $3,000,000`;
+          }
+          document.getElementById('lt-threshold').textContent = '$300,000';
+
+        } else if (data.special === 'wa') {
+          // WA: $300k–$420k charges 0.15% on full value, then switches to marginal
+          const waB = [
+            [420000,   1000000,  630,    0.0045 ],
+            [1000000,  1800000,  3240,   0.0076 ],
+            [1800000,  5000000,  9320,   0.0132 ],
+            [5000000,  11000000, 51560,  0.0165 ],
+            [11000000, Infinity, 150560, 0.0267 ],
+          ];
+          if (v <= 300000) {
+            annual = 0; bracketHtml = '<strong>Below $300,000 threshold.</strong> No land tax payable.';
+          } else if (v <= 420000) {
+            annual = v * 0.0015;
+            bracketHtml = `0.15% × ${fmt$(v)} (full value) = ${fmt$(annual)}`;
+          } else {
+            for (let i = waB.length - 1; i >= 0; i--) {
+              if (v > waB[i][0]) {
+                annual = waB[i][2] + (v - waB[i][0]) * waB[i][3];
+                bracketHtml = `${fmt$(waB[i][2])} base + ${(waB[i][3]*100).toFixed(2)}% × ${fmt$(v - waB[i][0])} excess over ${fmt$(waB[i][0])}`;
+                break;
+              }
+            }
+          }
+          document.getElementById('lt-threshold').textContent = '$300,000';
+
+        } else {
+          // Standard marginal brackets
+          const B = data.brackets;
+          for (let i = B.length - 1; i >= 0; i--) {
+            if (v > B[i][0]) {
+              annual = B[i][2] + (v - B[i][0]) * B[i][3];
+              if (annual <= 0) {
+                bracketHtml = `<strong>Below ${fmt$(data.threshold)} threshold.</strong> No land tax payable.`;
+              } else {
+                const base = B[i][2] > 0 ? `${fmt$(B[i][2])} base + ` : '';
+                const rate = B[i][3] > 0 ? `${(B[i][3]*100).toFixed(2)}% × ${fmt$(v - B[i][0])} excess over ${fmt$(B[i][0])}` : '';
+                bracketHtml = base + rate;
+              }
+              break;
+            }
+          }
+          document.getElementById('lt-threshold').textContent = data.threshold ? fmt$(data.threshold) : 'N/A';
+        }
+
+        const effRate = v > 0 ? annual / v : 0;
+        document.getElementById('lt-annual').textContent  = annual > 0 ? fmt$(annual) : '$0';
+        document.getElementById('lt-rate').textContent    = annual > 0 ? (effRate * 100).toFixed(3) + '%' : '0%';
+        document.getElementById('lt-monthly').textContent = annual > 0 ? fmt$(annual / 12) + '/mo' : '$0/mo';
+        document.getElementById('lt-brackets').innerHTML  = bracketHtml;
+        document.getElementById('lt-note').textContent    = data.note;
       };
 
       document.addEventListener('DOMContentLoaded', function() {
